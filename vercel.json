@@ -4,22 +4,9 @@
     {
       "source": "/(.*)",
       "headers": [{ "key": "X-Content-Type-Options", "value": "nosniff" }]
-    },
-    {
-      "source": "/",
-      "headers": [
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; manifest-src 'self'; media-src 'self' blob:; base-uri 'self'"
-        }
-      ]
     }
   ],
   "rewrites": [
-    { "source": "/api/:path*", "destination": "/api/handler" },
-    { "source": "/pay/:path*", "destination": "/api/handler" },
-    { "source": "/webhooks/:path*", "destination": "/api/handler" },
-    { "source": "/", "destination": "/public/index.html" },
-    { "source": "/:path*", "destination": "/public/:path*" }
+    { "source": "/:path*", "destination": "/api/handler" }
   ]
 }
