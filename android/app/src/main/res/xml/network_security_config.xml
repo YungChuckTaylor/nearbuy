@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cleartext HTTP is permitted so developers can point the app at
+     http://<computer-lan-ip>:3000 while testing against `node server.js`.
+     HARDEN FOR PRODUCTION: flip cleartextTrafficPermitted to false once the
+     API runs on HTTPS (see docs/ANDROID.md). -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

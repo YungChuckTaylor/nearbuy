@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand palette, kept in sync with public/css/app.css -->
+    <color name="navy">#232C5C</color>
+    <color name="orange">#E87B29</color>
+    <color name="white">#FFFFFF</color>
+</resources>

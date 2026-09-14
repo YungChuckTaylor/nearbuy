@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cold-start splash: brand navy + white rounded wordmark card (logo_wordmark.png
+     is generated from public/assets/logo.jpg by tools/make-icons.py). -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/navy" />
+    <item
+        android:width="250dp"
+        android:height="145dp"
+        android:gravity="center">
+        <bitmap android:src="@drawable/logo_wordmark" android:gravity="fill" />
+    </item>
+</layer-list>

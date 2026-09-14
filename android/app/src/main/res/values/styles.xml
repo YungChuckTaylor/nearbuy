@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- Branded splash shows instantly via windowBackground while the WebView boots. -->
+        <item name="android:windowBackground">@drawable/splash</item>
+        <item name="android:statusBarColor">@color/navy</item>
+        <item name="android:navigationBarColor">@color/white</item>
+        <!-- Ignored on API < 27; keeps the light nav bar buttons dark on white. -->
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>
