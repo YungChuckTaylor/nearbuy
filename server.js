@@ -989,8 +989,19 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; cha
 
 export async function handler(req, res) {
   await initStorage();
-  const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-  const p = url.pathname;
+  const base = `http://${req.headers.host || 'localhost'}`;
+  const url = new URL(req.url, base);
+  // Vercel rewrite passthrough: with a catch-all rewrite the function may
+  // receive the destination (/api/handler) with the original path appended as
+  // ?path=… (named-param append), or in a rewrite header. Reconstruct the
+  // true path so routing/static serving work regardless of platform.
+  let p = url.pathname;
+  const rewriteHdr = req.headers['x-rewrite-path'] || req.headers['x-vercel-rewritten-path'];
+  if (rewriteHdr) {
+    p = new URL(String(rewriteHdr), base).pathname;
+  } else if (p === '/api/handler' && url.searchParams.has('path')) {
+    p = '/' + String(url.searchParams.get('path') || '');
+  }
   const isApi = p.startsWith('/api');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
