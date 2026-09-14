@@ -1072,6 +1072,8 @@ export async function handler(req, res) {
     res.end(data);
   });
 }
+export default handler; // Vercel's serverless launcher requires a default export
+
 function csp() {
   return "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; manifest-src 'self'; media-src 'self' blob:; base-uri 'self'";
 }
