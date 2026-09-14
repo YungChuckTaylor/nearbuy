@@ -1,0 +1,17 @@
+{
+  "name": "nearbuygoods",
+  "version": "1.0.0",
+  "description": "NearBuyGoods — upload any item, find it at stores near you. API-first web app + PWA, foundation for native mobile builds.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "icons": "node tools/make-icons.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {}
+}
