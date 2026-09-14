@@ -1,8 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "functions": {
-    "api/handler.js": { "runtime": "nodejs20.x" }
-  },
   "headers": [
     {
       "source": "/(.*)",
