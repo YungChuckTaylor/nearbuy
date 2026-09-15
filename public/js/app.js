@@ -117,7 +117,22 @@ function paintUnread(n) {
 async function boot() {
   await loadMeta();
   await loadSession();
+  hideSplash(); // must clear before onboarding: splash (z-99) covers the tour (z-70)
   if (!localStorage.getItem('nbg_onboarded')) {
+    const ob = await renderOnboarding(() => {
+      document.querySelector('.onboard')?.remove();
+      startApp();
+    });
+    document.body.append(ob);
+    return;
+  }
+  startApp();
+}
+
+function hideSplash() {
+  const splash = document.getElementById('splash');
+  if (splash) { splash.classList.add('done'); setTimeout(() => splash.remove(), 400); }
+}
     const ob = await renderOnboarding(() => {
       document.querySelector('.onboard')?.remove();
       startApp();
