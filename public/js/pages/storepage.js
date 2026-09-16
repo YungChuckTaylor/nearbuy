@@ -56,7 +56,7 @@ export function renderStore(id, nav) {
         r.responses?.map((resp) => h('div', { class: 'small', style: { background: 'var(--navy-soft)', borderRadius: '10px', padding: '8px 10px', marginTop: '6px' } }, h('b', { text: `${resp.name}: ` }), resp.text)) || null,
         h('div', { class: 'row spread', style: { marginTop: '6px' } },
           h('span', { class: 'tiny muted', text: timeAgo(r.created) }),
-          h('button', { class: 'tiny bold', style: { color: 'var(--navy-2)' }, onclick: async (e) => { const { helpful } = await api.post(`/reviews/${r.id}/helpful`, {}); e.currentTarget.textContent = `👍 Helpful (${helpful})`; } }, `👍 Helpful (${r.helpful})`))))
+          h('button', { class: 'tiny bold', style: { color: 'var(--navy-2)' }, onclick: async (e) => { const btn = e.currentTarget; const { helpful } = await api.post(`/reviews/${r.id}/helpful`, {}); btn.textContent = `👍 Helpful (${helpful})`; } }, `👍 Helpful (${r.helpful})`))))
         : h('p', { class: 'muted small', text: 'No reviews yet.' }),
       h('button', { class: 'btn ghost block', style: { marginTop: '10px' }, onclick: () => reviewSheet(null, id, () => nav(location.hash)) }, 'Rate this store'));
 
@@ -71,7 +71,7 @@ export function renderStore(id, nav) {
     const pane = h('div');
     const panes = { Products: invBox, Reviews: reviewsBox, About: about };
     Object.keys(panes).forEach((k, i) => {
-      const b = h('button', { class: i === 0 ? 'active' : '', onclick: () => { [...tabs.children].forEach((c) => c.classList.remove('active')); b.classList.add('active'); pane.innerHTML = ''; pane.append(panes[k]); } }, `${k}${k === 'Products' ? ` (${inventory.length})` : ''}`);
+            const b = h('button', { class: i === 0 ? 'active' : '', onclick: () => { [...tabs.children].forEach((c) => c.classList.remove('active')); b.classList.add('active'); pane.innerHTML = ''; pane.append(panes[k]); } }, `${k}${k === 'Products' ? ` (${inventory.length})` : ''}`);
       tabs.append(b);
     });
     pane.append(panes.Products);
