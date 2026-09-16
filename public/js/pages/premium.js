@@ -62,12 +62,13 @@ export function renderPremium(params, nav) {
             h('span', { style: { fontSize: '1.3rem', fontWeight: 800, letterSpacing: '-.02em' }, text: `${money(p.amount / 100)}${' '}/ ${p.per}` })),
           h('button', {
             class: 'btn primary sm', disabled: plan?.id === p.id, onclick: async (e) => {
-              e.currentTarget.disabled = true;
+              const btn = e.currentTarget; // currentTarget is null after an await — capture before
+              btn.disabled = true;
               try {
                 const init = await api.post('/payments/initialize', { type: 'subscription', plan_id: p.id });
                 openCheckout(init);
                 pollOnce(nav);
-              } catch (err) { toast(err.message, 'bad'); e.currentTarget.disabled = false; }
+              } catch (err) { toast(err.message, 'bad'); btn.disabled = false; }
             },
           }, plan?.id === p.id ? 'Current plan' : 'Subscribe')),
         h('ul', { style: { margin: '10px 0 0', padding: '0 0 0 4px', listStyle: 'none' } },
