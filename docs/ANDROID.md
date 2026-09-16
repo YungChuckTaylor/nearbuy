@@ -64,7 +64,7 @@ JS detects the wrapper via `window.NBGBridge` and adapts:
 
 ## 2. Install & test on your phone (≈5 minutes)
 
-1. Get `android/NearBuyGoods-v1.1.0-debug.apk` onto the phone — USB copy,
+1. Get the newest `android/NearBuyGoods-v*-debug.apk` onto the phone — USB copy,
    Google Drive, or WhatsApp-it-to-yourself. Tap it; allow "install unknown
    apps" when prompted.
 2. On your computer run the API: `node server.js` (port 3000).
@@ -109,6 +109,36 @@ curl -LO https://dl.google.com/android/repository/platform-34-ext7_r03.zip \
 
 Then `cd android && ./build-apk.sh` → signed APK + `aapt2 badging` summary.
 Override the toolchain location with `NBG_ANDROID_TOOLS=/path`.
+
+### C. CI — automatic APK builds (one-time enable, then zero-touch)
+
+Copy `docs/ci/android-build-workflow.yml` to `.github/workflows/build-android.yml`
+(and commit it). From then on, every push to `main` that touches `public/**`
+(the bundled PWA) or the Android shell: installs the toolchain on the runner,
+runs `build-apk.sh`, verifies the bundle inside the APK matches `public/`
+byte-for-byte, uploads the APK as a workflow artifact, and commits the signed
+APK back into `android/` (replacing the previous one) so the newest APK is
+always downloadable from the repo.
+
+**Remember:** the APK bundles a *snapshot* of the frontend — deploying the site
+(Vercel or `node server.js`) does **not** update an already-installed app.
+Frontend changes reach the app only through a new APK. Install the new APK over
+the old one (same debug key ⇒ in-place upgrade; the configured server address
+is kept).
+
+### D. Hot-patching the APK without any Android toolchain
+
+`tools/apk-patch.py` swaps `public/` into an existing signed APK and re-signs it
+with the repo debug key using pure Python (`pip install cryptography apksigtool`):
+
+```bash
+python3 tools/apk-patch.py android/NearBuyGoods-v1.1.0-debug.apk public \
+        android/NearBuyGoods-v1.1.0-debug.apk android/keys/nbg-debug.keystore nearbuygoods
+```
+
+It self-validates (byte-exact round-trip of the original signing block, then
+full v2 verification of the result). Manifest/versionCode are unchanged — it is
+a content hot-patch, not a version bump; use A/B/C for real releases.
 
 Version bumps: edit `VERSION_CODE/VERSION_NAME` in `build-apk.sh` **and**
 `versionCode/versionName` in `app/build.gradle` (keep both in step).

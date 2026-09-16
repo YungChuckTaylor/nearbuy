@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
     static final String APP_ORIGIN = "https://" + APP_HOST;
     static final String PREFS = "nbg_prefs";
     static final String KEY_API = "api_base";
-    static final String UA_SUFFIX = " NBGAndroid/1.1.0";
+    static final String UA_SUFFIX = " NBGAndroid/1.1.1";
 
     static final int REQ_CAMERA = 1001;
     static final int REQ_LOCATION = 1002;

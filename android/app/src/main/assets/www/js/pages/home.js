@@ -43,7 +43,7 @@ export function renderHome(nav) {
       h('p', { class: 'muted small', style: { margin: '-6px 0 14px' }, text: `Showing stores within ${state.radius} km of ${state.loc.label}.` }));
 
     const meta = state.meta || await api.get('/meta', { auth: false, cache: true });
-    cats.append((meta?.categories || []).map((c) =>
+    cats.append(...(meta?.categories || []).map((c) =>
       h('button', { class: 'cat', onclick: () => nav(`#/search?cat=${c.id}`) }, h('span', { class: 'ic', text: c.emoji }), c.name.split(' ')[0])));
 
     deals.append(skeletonRows(1));
@@ -59,7 +59,7 @@ export function renderHome(nav) {
 
     try {
       const { trending } = await api.get('/trending', { cache: true });
-      trend.append(trending.slice(0, 6).map((t) => h('button', { class: 'chip', onclick: () => nav(`#/search?q=${encodeURIComponent(t.q)}`) }, ic('search', 14), `${t.q} · ${t.count}`)));
+      trend.append(...trending.slice(0, 6).map((t) => h('button', { class: 'chip', onclick: () => nav(`#/search?q=${encodeURIComponent(t.q)}`) }, ic('search', 14), `${t.q} · ${t.count}`)));
     } catch { /* offline */ }
 
     popular.append(skeletonRows(3));

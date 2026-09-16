@@ -19,8 +19,8 @@ done
 export JAVA_HOME PATH="$JAVA_HOME/bin:$PATH"
 
 PKG=app.nearbuygoods.android
-VERSION_CODE=2
-VERSION_NAME=1.1.0
+VERSION_CODE=3
+VERSION_NAME=1.1.1
 OUT="NearBuyGoods-v${VERSION_NAME}-debug.apk"
 APP=app/src/main
 WORK="${TMPDIR:-/tmp}/nbg-apk-build"

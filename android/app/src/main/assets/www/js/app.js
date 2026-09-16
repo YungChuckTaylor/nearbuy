@@ -117,6 +117,7 @@ function paintUnread(n) {
 async function boot() {
   await loadMeta();
   await loadSession();
+  hideSplash(); // must clear before onboarding: splash (z-99) covers the tour (z-70)
   if (!localStorage.getItem('nbg_onboarded')) {
     const ob = await renderOnboarding(() => {
       document.querySelector('.onboard')?.remove();
@@ -126,6 +127,11 @@ async function boot() {
     return;
   }
   startApp();
+}
+
+function hideSplash() {
+  const splash = document.getElementById('splash');
+  if (splash) { splash.classList.add('done'); setTimeout(() => splash.remove(), 400); }
 }
 
 function startApp() {
@@ -149,9 +155,7 @@ function startApp() {
     navigator.serviceWorker.register('/sw.js').catch(() => { });
   }
   // hide splash
-  const splash = document.getElementById('splash');
-  splash.classList.add('done');
-  setTimeout(() => splash.remove(), 400);
+  hideSplash();
 }
 
 boot();

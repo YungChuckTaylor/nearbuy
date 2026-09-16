@@ -1,0 +1,81 @@
+name: Build Android APK
+
+# The Android app bundles a snapshot of public/ (served from the APK itself),
+# so every frontend/shell change needs a new APK. This workflow rebuilds it
+# automatically on pushes to main that touch the bundle or the shell, verifies
+# the bundle inside the APK, and commits the signed APK back into android/ so
+# it can be downloaded straight from the repo (same convention as before).
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'public/**'
+      - 'android/app/**'
+      - 'android/build-apk.sh'
+      - '.github/workflows/build-android.yml'
+  workflow_dispatch:
+
+# Serialize builds — the commit-back step pushes to main.
+concurrency:
+  group: android-apk-build
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Python deps (Pillow for launcher-icon generation)
+        run: python3 -m pip install --user pillow
+
+      - name: Android toolchain (build-tools r34 + platform 34, per docs/ANDROID.md §CLI)
+        run: |
+          T="$HOME/.cache/nbg-android"
+          mkdir -p "$T"
+          ln -sfn "$JAVA_HOME" "$T/jdk-17"   # build-apk.sh expects jdk-17* here
+          cd "$T"
+          curl -sfLO https://dl.google.com/android/repository/build-tools_r34-linux.zip
+          unzip -q build-tools_r34-linux.zip && rm build-tools_r34-linux.zip
+          curl -sfLO https://dl.google.com/android/repository/platform-34-ext7_r03.zip
+          unzip -q platform-34-ext7_r03.zip && rm platform-34-ext7_r03.zip
+
+      - name: Build APK
+        run: cd android && ./build-apk.sh
+
+      - name: Verify the bundle inside the APK matches public/
+        run: |
+          APK=$(ls android/NearBuyGoods-v*-debug.apk)
+          for f in index.html sw.js manifest.webmanifest js/app.js js/pages/auth.js css/app.css; do
+            unzip -p "$APK" "assets/www/$f" | diff - "public/$f" || { echo "MISMATCH: $f"; exit 1; }
+          done
+          echo "Bundle inside APK verified: $APK"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nearbuygoods-debug-apk
+          path: android/NearBuyGoods-v*-debug.apk
+          retention-days: 30
+
+      - name: Commit the APK into android/ (keeps exactly the newest one)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          cd android
+          NEW=$(ls NearBuyGoods-v*-debug.apk | sort -V | tail -1)
+          ls NearBuyGoods-v*-debug.apk* | grep -v "^$NEW" | xargs -r git rm -q --ignore-unmatch
+          git add "$NEW"
+          [ -f "$NEW.idsig" ] && git add "$NEW.idsig"
+          if git diff --cached --quiet; then echo "No APK change to commit."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: rebuild debug APK ($NEW) [skip ci]"
+          git pull --rebase origin main
+          git push

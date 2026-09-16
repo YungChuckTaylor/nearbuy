@@ -10,8 +10,8 @@ android {
         applicationId "app.nearbuygoods.android"
         minSdk 24          // Android 7.0+ — ~97% of active devices
         targetSdk 34       // Play Store requirement (2026)
-        versionCode 2
-        versionName "1.1.0"
+        versionCode 3
+        versionName "1.1.1"
     }
 
     buildTypes {
