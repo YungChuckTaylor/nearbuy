@@ -1,7 +1,7 @@
 /* NearBuyGoods service worker: app-shell precache, runtime caching, Web Push display.
    API calls stay network-first so prices/stock are never stale offline;
    failed GETs fall back to the last cached payload (handled in api.js). */
-const VERSION = 'nbg-v1.1.2';
+const VERSION = 'nbg-v1.1.3';
 const SHELL = [
   '/', '/index.html', '/manifest.webmanifest',
   '/css/app.css',
