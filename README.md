@@ -65,7 +65,7 @@ dependency-free native shell (WebView on a private secure origin + native
 camera/GPS/file-picker/download bridges + configurable API address):
 
 ```bash
-cd android && ./build-apk.sh        # → NearBuyGoods-v1.1.0-debug.apk (no Gradle needed)
+cd android && ./build-apk.sh        # → NearBuyGoods-v*-debug.apk (no Gradle needed)
 # or open android/ in Android Studio and press Run
 ```
 

@@ -19,20 +19,30 @@ export function renderAuth(onDone) {
 
   const email = h('input', { class: 'input', type: 'email', placeholder: 'Email', autocomplete: 'email', value: 'shopper@nearbuygoods.app' });
   const pass = h('input', { class: 'input', type: 'password', placeholder: 'Password', autocomplete: 'current-password', value: 'demo1234' });
-  const name = h('input', { class: 'input', placeholder: 'Full name' });
+  const name = h('input', { class: 'input', placeholder: 'Full name', autocomplete: 'name' });
   const role = h('select', { class: 'input' },
     h('option', { value: 'shopper', text: 'I shop — find items near me' }),
     h('option', { value: 'store_owner', text: 'I run a store — list my inventory' }));
+  // Name/Role inputs live inside these field wrappers — setMode must toggle the
+  // WRAPPERS. Toggling only the inputs leaves the wrappers display:none, so the
+  // fields never show in register mode and name submits empty (signup 400).
+  const nameField = h('label', { class: 'field' }, h('span', { text: 'Name' }), name);
+  const roleField = h('label', { class: 'field' }, h('span', { text: 'Role' }), role);
   const submit = h('button', { class: 'btn primary block', onclick: submitFn }, 'Log in');
 
   function setMode(m) {
     mode = m;
     [...seg.children].forEach((b, i) => b.classList.toggle('active', (i === 0) === (m === 'login')));
-    name.style.display = m === 'register' ? '' : 'none';
-    role.style.display = m === 'register' ? '' : 'none';
+    nameField.style.display = m === 'register' ? '' : 'none';
+    roleField.style.display = m === 'register' ? '' : 'none';
+    pass.setAttribute('autocomplete', m === 'register' ? 'new-password' : 'current-password');
     submit.textContent = m === 'register' ? 'Create account' : 'Log in';
   }
   async function submitFn() {
+    if (mode === 'register') {
+      if (!name.value.trim()) { toast('Please enter your full name.', 'bad'); name.focus(); return; }
+      if (pass.value.length < 8) { toast('Password must be at least 8 characters.', 'bad'); pass.focus(); return; }
+    }
     submit.disabled = true;
     try {
       const res = mode === 'login'
@@ -61,8 +71,8 @@ export function renderAuth(onDone) {
 
   form.append(seg,
     h('label', { class: 'field' }, h('span', { text: 'Email' }), email),
-    h('label', { class: 'field', style: { display: 'none' } }, h('span', { text: 'Name' }), name),
-    h('label', { class: 'field', style: { display: 'none' } }, h('span', { text: 'Role' }), role),
+    nameField,
+    roleField,
     h('label', { class: 'field' }, h('span', { text: 'Password' }), pass),
     submit,
     h('p', { class: 'tiny muted', style: { margin: '12px 0 0', textAlign: 'center' }, text: 'Social login (Google/Apple), OTP & biometrics are wired as extension points — see docs/RESEARCH.md §1.' }));

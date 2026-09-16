@@ -30,7 +30,7 @@ export function renderAdmin(nav) {
     health.append(h('div', { class: 'bold small', style: { marginBottom: '6px' }, text: 'Infrastructure health' }),
       h('p', { class: 'small muted', style: { margin: 0 }, text: `Node ${s.health.node} · RSS ${s.health.mem_mb} MB · uptime ${s.health.uptime_s}s · JSON store with debounced writes (Postgres+PostGIS migration path documented).` }));
     searchBox.innerHTML = '';
-    searchBox.append(s.top_searches.map((t) => h('div', { class: 'listrow' }, h('span', { class: 'grow bold small', text: t.q }), h('span', { class: 'badge navy', text: `${t.count} searches` }))));
+    searchBox.append(...s.top_searches.map((t) => h('div', { class: 'listrow' }, h('span', { class: 'grow bold small', text: t.q }), h('span', { class: 'badge navy', text: `${t.count} searches` }))));
     const { flags } = await api.get('/admin/flags');
     flagBox.innerHTML = '';
     const open = flags.filter((f) => f.status === 'open');
