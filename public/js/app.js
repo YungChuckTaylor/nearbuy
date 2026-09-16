@@ -164,9 +164,7 @@ function startApp() {
     navigator.serviceWorker.register('/sw.js').catch(() => { });
   }
   // hide splash
-  const splash = document.getElementById('splash');
-  splash.classList.add('done');
-  setTimeout(() => splash.remove(), 400);
+  hideSplash();
 }
 
 boot();
