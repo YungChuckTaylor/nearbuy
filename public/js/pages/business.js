@@ -31,7 +31,7 @@ export function renderBusiness(nav) {
     myStores = stores;
     if (!stores.length) { root.append(emptyState('🏪', 'No stores yet', 'Register your first store to start listing inventory.')); return; }
     activeStore = stores[0].id;
-    storeChips.append(stores.map((s) => h('button', {
+    storeChips.append(...stores.map((s) => h('button', {
       class: `chip ${s.id === activeStore ? 'active' : ''}`, onclick: (e) => { activeStore = s.id; [...storeChips.children].forEach((c) => c.classList.remove('active')); e.currentTarget.classList.add('active'); loadAll(); },
     }, `${s.emoji} ${s.name}`)));
     loadAll();
