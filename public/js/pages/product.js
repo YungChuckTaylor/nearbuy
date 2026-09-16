@@ -35,8 +35,9 @@ export function renderProduct(id, nav) {
         h('span', { class: 'col', style: { gap: '8px' } },
           h('button', { class: 'iconbtn', style: { background: 'var(--navy-soft)', color: saved ? 'var(--orange)' : 'var(--navy)' }, 'aria-label': 'Save & watch price', onclick: async (e) => {
             if (!getToken()) return nav('#/auth');
-            if (saved) { await api.del(`/saved/${id}`); toast('Removed from saved'); e.currentTarget.style.color = 'var(--navy)'; }
-            else { await api.post('/saved', { product_id: id, watch: true }); toast('Saved — we will alert you on price drops & restocks', 'ok'); e.currentTarget.style.color = 'var(--orange)'; }
+            const btn = e.currentTarget; // currentTarget is null after an await — capture before
+            if (saved) { await api.del(`/saved/${id}`); toast('Removed from saved'); btn.style.color = 'var(--navy)'; }
+            else { await api.post('/saved', { product_id: id, watch: true }); toast('Saved — we will alert you on price drops & restocks', 'ok'); btn.style.color = 'var(--orange)'; }
             saved = !saved;
           } }, ic('bookmark', 20)),
           h('button', { class: 'iconbtn', style: { background: 'var(--navy-soft)', color: 'var(--navy)' }, 'aria-label': 'Share', onclick: () => share({ title: product.name, text: `${product.name} from ${money(best?.price || 0)} near you`, url: location.href }) }, ic('share', 20)))));
