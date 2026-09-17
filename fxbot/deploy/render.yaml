@@ -1,0 +1,26 @@
+# Render: https://render.com -- free tier sleeps, so use the Starter worker ($7/mo)
+# for a bot that must be awake during London/NY.
+services:
+  - type: worker
+    name: fxbot
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    region: frankfurt          # closest region to Deriv's EU infrastructure
+    envVars:
+      - key: DERIV_APP_ID
+        sync: false
+      - key: DERIV_API_TOKEN
+        sync: false            # set in the dashboard, never in git
+      - key: FXBOT_MODE
+        value: paper
+      - key: FXBOT_SYMBOLS
+        value: frxEURUSD,frxGBPUSD,frxUSDJPY
+      - key: FXBOT_GRANULARITY
+        value: "900"
+      - key: TZ
+        value: UTC
+    disk:
+      name: fxbot-state
+      mountPath: /app/data
+      sizeGB: 1

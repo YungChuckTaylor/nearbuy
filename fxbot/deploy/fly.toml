@@ -1,0 +1,28 @@
+# Fly.io: https://fly.io -- one shared-cpu VM, ~$3-5/mo, never sleeps if you
+# keep min_machines_running = 1.
+app = "fxbot"
+primary_region = "lhr"        # London: next door to the FX liquidity
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  FXBOT_MODE = "paper"
+  FXBOT_SYMBOLS = "frxEURUSD,frxGBPUSD,frxUSDJPY"
+  FXBOT_GRANULARITY = "900"
+  TZ = "UTC"
+
+[[mounts]]
+  source = "fxbot_data"
+  destination = "/app/data"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false      # a trading bot must not be suspended
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

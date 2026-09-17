@@ -1,0 +1,13 @@
+# Core (needed to run anything)
+websockets>=12.0
+pandas>=2.0
+numpy>=1.24
+scikit-learn>=1.3
+joblib>=1.3
+
+# Optional but recommended: the lightgbm backend trains faster and usually
+# generalises a little better on tabular features. Falls back to sklearn.
+lightgbm>=4.0
+
+# Dev / test
+pytest>=7.4

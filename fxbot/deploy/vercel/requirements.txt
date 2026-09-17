@@ -1,0 +1,8 @@
+# Keep this list as small as the strategy allows -- serverless cold starts and
+# bundle size are the two things that make Vercel painful for this workload.
+# Drop scikit-learn/joblib if you run with --no-model (rules only).
+websockets>=12.0
+pandas>=2.0
+numpy>=1.24
+scikit-learn>=1.3
+joblib>=1.3

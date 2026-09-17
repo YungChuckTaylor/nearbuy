@@ -1,0 +1,7 @@
+# Local state, cached market data and trained models: never commit these.
+data/
+*.joblib
+.env
+__pycache__/
+.pytest_cache/
+*.pyc

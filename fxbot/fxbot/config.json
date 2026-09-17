@@ -1,0 +1,72 @@
+{
+  "costs": {
+    "commission_on_exit": true,
+    "commission_rate": 0.000199,
+    "slippage_bps": 0.2,
+    "spread_bps": 0.6
+  },
+  "data": {
+    "cache_dir": "data/fxbot",
+    "granularity": 900,
+    "history_bars": 20000,
+    "live_bars": 600,
+    "symbols": [
+      "frxEURUSD",
+      "frxGBPUSD",
+      "frxUSDJPY",
+      "frxAUDUSD",
+      "frxUSDCHF"
+    ]
+  },
+  "deriv": {
+    "app_id": "1089",
+    "currency": "USD",
+    "endpoint": "wss://ws.derivws.com/websockets/v3",
+    "keepalive_seconds": 20.0,
+    "max_retries": 5,
+    "request_timeout": 20.0,
+    "token": ""
+  },
+  "log_level": "INFO",
+  "model": {
+    "backend": "auto",
+    "enabled": true,
+    "learning_rate": 0.03,
+    "max_depth": 4,
+    "min_samples_leaf": 50,
+    "model_path": "data/fxbot/model.joblib",
+    "n_estimators": 400,
+    "threshold": 0.55,
+    "train_threshold": 0.5
+  },
+  "risk": {
+    "kill_switch_file": "data/fxbot/STOP",
+    "max_daily_loss_pct": 2.0,
+    "max_notional_x_equity": 30.0,
+    "max_open_trades": 3,
+    "max_stake_pct": 5.0,
+    "min_stake": 1.0,
+    "multiplier": 30,
+    "risk_per_trade_pct": 0.5
+  },
+  "state_path": "data/fxbot/state.json",
+  "state_token": "",
+  "state_url": "",
+  "strategy": {
+    "atr_period": 14,
+    "avoid_friday_after_hour": 20,
+    "cooldown_bars": 4,
+    "ema_fast": 12,
+    "ema_slow": 48,
+    "lookback": 48,
+    "max_holding_bars": 32,
+    "name": "donchian_breakout",
+    "rsi_lower": 25.0,
+    "rsi_period": 14,
+    "rsi_upper": 75.0,
+    "session_end_hour": 16,
+    "session_start_hour": 7,
+    "stop_loss_k": 3.0,
+    "take_profit_k": 6.0
+  }
+}
