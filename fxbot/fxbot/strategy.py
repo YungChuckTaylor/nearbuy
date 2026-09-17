@@ -86,8 +86,9 @@ def rsi_reversal(frame: pd.DataFrame, cfg: StrategyConfig) -> pd.Series:
 
 
 def primary_signals(frame: pd.DataFrame, cfg: StrategyConfig,
-                    name: Optional[str] = None) -> pd.Series:
-    """Return a +1/-1/0 side per bar, after session + volatility filters."""
+                    name: Optional[str] = None,
+                    news_mask: Optional[pd.Series] = None) -> pd.Series:
+    """Return a +1/-1/0 side per bar, after session + volatility + news filters."""
     name = name or cfg.name
     if name == "donchian_breakout":
         raw = donchian_breakout(frame, cfg)
@@ -99,6 +100,8 @@ def primary_signals(frame: pd.DataFrame, cfg: StrategyConfig,
         raise ValueError(f"unknown strategy {name!r}; choose from {STRATEGIES}")
 
     ok = in_session(frame.index, cfg) & vol_filter(frame)
+    if news_mask is not None:
+        ok = ok & ~news_mask.reindex(frame.index).fillna(False).astype(bool)
     return raw.where(ok, 0.0).astype(float)
 
 
@@ -119,13 +122,15 @@ def enforce_cooldown(sides: pd.Series, cooldown_bars: int) -> pd.Series:
 
 
 def signal_at(frame: pd.DataFrame, cfg: StrategyConfig, name: Optional[str] = None,
-              model=None, threshold: float = 0.5) -> Optional[dict]:
+              model=None, threshold: float = 0.5,
+              news_mask: Optional[pd.Series] = None) -> Optional[dict]:
     """Evaluate the LATEST closed bar and return a decision dict (or None).
 
     This is what the live engine calls. It never touches a bar that is still
     forming -- the caller must pass a frame whose last row is a completed bar.
     """
-    sides = enforce_cooldown(primary_signals(frame, cfg, name), cfg.cooldown_bars)
+    sides = enforce_cooldown(primary_signals(frame, cfg, name, news_mask=news_mask),
+                             cfg.cooldown_bars)
     if sides.empty or float(sides.iloc[-1]) == 0.0:
         return None
     ts = sides.index[-1]

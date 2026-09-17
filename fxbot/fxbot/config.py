@@ -12,6 +12,8 @@ from dataclasses import dataclass, field, fields, asdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from .news import NewsConfig
+
 
 DEFAULT_ENDPOINT = "wss://ws.derivws.com/websockets/v3"
 
@@ -156,6 +158,7 @@ class Config:
     model: ModelConfig = field(default_factory=ModelConfig)
     risk: RiskConfig = field(default_factory=RiskConfig)
     costs: CostConfig = field(default_factory=CostConfig)
+    news: NewsConfig = field(default_factory=NewsConfig)
     state_path: str = "data/fxbot/state.json"
     # Optional remote state (Upstash Redis / Vercel KV REST). Needed for
     # serverless deployments where the filesystem is ephemeral.

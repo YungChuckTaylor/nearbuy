@@ -1,0 +1,5 @@
+# Dashboard (python -m fxbot.cli serve)
+fastapi>=0.110
+uvicorn[standard]>=0.27
+# only needed to run the test-suite against the API
+httpx>=0.26

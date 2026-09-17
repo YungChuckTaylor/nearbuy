@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>fxbot dashboard</title>
+<link rel="stylesheet" href="/styles.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="dot"></span> fxbot <small id="version"></small></div>
+  <div class="pills">
+    <span class="pill" id="pill-mode">mode: —</span>
+    <span class="pill" id="pill-kill">kill switch: —</span>
+    <span class="pill" id="pill-balance">balance: —</span>
+    <span class="pill" id="pill-day">day P&amp;L: —</span>
+    <span class="pill" id="pill-positions">open: —</span>
+  </div>
+  <div class="actions">
+    <button id="btn-cycle" class="btn">Run cycle now</button>
+    <button id="btn-kill" class="btn danger">Kill</button>
+    <button id="btn-resume" class="btn ok">Resume</button>
+  </div>
+</header>
+
+<div id="banner" class="banner hidden"></div>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="overview">Overview</button>
+  <button class="tab" data-tab="signals">Signals</button>
+  <button class="tab" data-tab="params">Parameters</button>
+  <button class="tab" data-tab="research">Research</button>
+  <button class="tab" data-tab="news">News blackout</button>
+  <button class="tab" data-tab="logs">Logs</button>
+</nav>
+
+<main>
+  <!-- ------------------------------------------------------------ overview -->
+  <section class="tabpage active" id="page-overview">
+    <div class="grid cards">
+      <div class="card"><h3>Equity</h3><div class="value" id="kpi-equity">—</div><span class="sub" id="kpi-dd"></span></div>
+      <div class="card"><h3>Day P&amp;L</h3><div class="value" id="kpi-day">—</div><span class="sub" id="kpi-daypct"></span></div>
+      <div class="card"><h3>Win rate</h3><div class="value" id="kpi-win">—</div><span class="sub" id="kpi-trades"></span></div>
+      <div class="card"><h3>Cost reality check</h3><div class="value" id="kpi-cost">—</div><span class="sub" id="kpi-costsub"></span></div>
+    </div>
+
+    <div class="card">
+      <h3>Equity curve <span class="sub">from closed trades in the state store</span></h3>
+      <div id="equity-chart" class="chart"></div>
+    </div>
+
+    <div class="grid two">
+      <div class="card">
+        <h3>Open positions</h3>
+        <table class="tbl" id="tbl-positions"><tbody><tr><td class="muted">loading…</td></tr></tbody></table>
+      </div>
+      <div class="card">
+        <h3>Recent trades</h3>
+        <table class="tbl" id="tbl-trades"><tbody><tr><td class="muted">loading…</td></tr></tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------- signals -->
+  <section class="tabpage" id="page-signals">
+    <div class="card">
+      <div class="row">
+        <h3>Current setups</h3>
+        <div class="spacer"></div>
+        <label class="chk"><input type="checkbox" id="sig-offline" /> offline (synthetic data)</label>
+        <button class="btn" id="btn-scan">Scan now</button>
+      </div>
+      <table class="tbl" id="tbl-signals"><tbody><tr><td class="muted">press “Scan now”</td></tr></tbody></table>
+      <p class="hint">A setup is only a proposal. It becomes a trade if the model filter
+      accepts it, the news blackout is clear and the risk gates pass.</p>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------------- parameters -->
+  <section class="tabpage" id="page-params">
+    <div class="card">
+      <div class="row">
+        <h3>Parameters</h3>
+        <div class="spacer"></div>
+        <button class="btn" id="btn-save">Save changes</button>
+        <button class="btn ghost" id="btn-revert">Revert</button>
+        <button class="btn danger ghost" id="btn-reset">Reset to defaults</button>
+      </div>
+      <div id="param-groups"></div>
+      <p class="hint">Changes are validated, clamped to safe ranges and written to
+      <code id="cfg-path">config</code>. The running process picks them up on the next cycle;
+      the ML model itself is only retrained when you run <b>train</b>.</p>
+      <div id="param-warnings" class="warn"></div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------ research -->
+  <section class="tabpage" id="page-research">
+    <div class="card">
+      <div class="row">
+        <h3>Jobs</h3>
+        <div class="spacer"></div>
+        <button class="btn" data-job="fetch-data">Fetch data</button>
+        <button class="btn" data-job="backtest">Backtest</button>
+        <button class="btn" data-job="train">Train model</button>
+      </div>
+      <p class="hint">Runs on the server using the cached candles in
+      <code>data/fxbot</code>. Output streams below as it runs.</p>
+      <pre id="job-output" class="console">idle</pre>
+      <h3>Backtest result <span class="sub">model is scored out-of-sample</span></h3>
+      <table class="tbl" id="tbl-backtest"><tbody><tr><td class="muted">run a backtest</td></tr></tbody></table>
+      <h3>Model vs baseline</h3>
+      <table class="tbl" id="tbl-comparison"><tbody><tr><td class="muted">run a backtest</td></tr></tbody></table>
+      <div id="job-verdict" class="hint"></div>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------------------- news -->
+  <section class="tabpage" id="page-news">
+    <div class="card">
+      <div class="row">
+        <h3>News blackout</h3>
+        <div class="spacer"></div>
+        <button class="btn" id="btn-news-refresh">Reload calendar</button>
+      </div>
+      <table class="tbl" id="tbl-news-symbols"><tbody></tbody></table>
+      <h3>Upcoming scheduled events</h3>
+      <table class="tbl" id="tbl-news"><tbody><tr><td class="muted">loading…</td></tr></tbody></table>
+      <div class="row add-event">
+        <input id="ev-time" placeholder="2026-10-02T12:30:00Z" />
+        <input id="ev-currency" placeholder="USD" size="4" />
+        <input id="ev-name" placeholder="US Non-Farm Payrolls" />
+        <select id="ev-impact"><option value="3">high</option><option value="2">medium</option><option value="1">low</option></select>
+        <button class="btn" id="btn-news-add">Add to calendar</button>
+      </div>
+      <p class="hint">Times are UTC. Events are stored in the calendar JSON file
+      configured in Parameters → News blackout.</p>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------------------- logs -->
+  <section class="tabpage" id="page-logs">
+    <div class="card">
+      <h3>Server log <span class="sub">UTC</span></h3>
+      <pre id="log-output" class="console">loading…</pre>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast hidden"></div>
+<script src="/app.js"></script>
+</body>
+</html>

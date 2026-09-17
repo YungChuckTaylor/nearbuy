@@ -39,6 +39,24 @@
     "threshold": 0.55,
     "train_threshold": 0.5
   },
+  "news": {
+    "calendar_path": "data/fxbot/news.json",
+    "close_before_high": true,
+    "close_lead_minutes": 15,
+    "currency_scope": true,
+    "enabled": true,
+    "feed": "auto",
+    "finnhub_token": "",
+    "finnhub_utc_offset_hours": 0.0,
+    "include_approx_rules": true,
+    "min_impact": 2,
+    "minutes_after_high": 30,
+    "minutes_after_low": 0,
+    "minutes_after_medium": 10,
+    "minutes_before_high": 30,
+    "minutes_before_low": 0,
+    "minutes_before_medium": 10
+  },
   "risk": {
     "kill_switch_file": "data/fxbot/STOP",
     "max_daily_loss_pct": 2.0,

@@ -18,6 +18,7 @@ from .config import Config
 from .features import compute_features, feature_matrix, warmup_bars
 from .labeling import BarrierSpec, meta_labels, sample_weights, triple_barrier_labels
 from .model import MetaModel, classification_report
+from .news import NewsFilter
 from .strategy import enforce_cooldown, primary_signals
 
 log = logging.getLogger(__name__)
@@ -42,6 +43,7 @@ def build_dataset(cfg: Config, frames: Dict[str, pd.DataFrame]) -> Dataset:
         stop_loss_k=cfg.strategy.stop_loss_k,
         max_holding_bars=cfg.strategy.max_holding_bars,
     )
+    news = NewsFilter(cfg.news)
     Xs, ys, ws, t1s, times = [], [], [], [], []
     out_frames: Dict[str, pd.DataFrame] = {}
     out_sides: Dict[str, pd.Series] = {}
@@ -58,7 +60,9 @@ def build_dataset(cfg: Config, frames: Dict[str, pd.DataFrame]) -> Dataset:
         feats = feats.iloc[warmup_bars(cfg.strategy.lookback):]
         if feats.empty:
             continue
-        sides = enforce_cooldown(primary_signals(feats, cfg.strategy), cfg.strategy.cooldown_bars)
+        news_mask = news.blocked_mask(feats.index, symbol) if cfg.news.enabled else None
+        sides = enforce_cooldown(primary_signals(feats, cfg.strategy, news_mask=news_mask),
+                                 cfg.strategy.cooldown_bars)
         sides = sides[sides != 0]
         if sides.empty:
             log.warning("%s: no primary signals in this sample", symbol)
@@ -200,6 +204,64 @@ def compare_filter(cfg: Config, ds: Dataset, oos_proba: Optional[pd.Series],
             "commission_pct_of_risk": combined["commission_pct_of_risk"],
         })
     return pd.DataFrame(rows)
+
+
+def run_full_backtest(cfg: Config, frames: Optional[Dict[str, pd.DataFrame]] = None,
+                      equity0: float = 10_000.0) -> Dict[str, Any]:
+    """The honest end-to-end backtest: rules vs model, always OUT-OF-SAMPLE.
+
+    Applying a model to the same bars it was fitted on produces exactly the kind
+    of nonsense this is meant to catch (a 92% win rate on synthetic noise, for
+    example). So the model variant is scored using probabilities from the purged
+    walk-forward folds, and the comparison is printed next to "take every setup".
+    """
+    frames = frames if frames is not None else load_frames(cfg)
+    if not frames:
+        return {"rows": [], "comparison": [], "verdict": "no cached data - run fetch-data"}
+    ds = build_dataset(cfg, frames)
+    if ds.X.empty:
+        return {"rows": [], "comparison": [], "verdict": "no labelled events"}
+    report, oos, model = walk_forward_evaluate(cfg, ds)
+
+    rows: List[dict] = []
+    for symbol, frame in ds.frames.items():
+        proba = None
+        if oos is not None:
+            try:
+                proba = oos.loc[symbol]
+                proba.index = pd.DatetimeIndex(proba.index)
+            except KeyError:
+                proba = None
+        for variant, p in (("take_all", None),
+                           (f"model>={cfg.model.threshold} (out-of-sample)", proba)):
+            res = run_backtest(frame, ds.sides[symbol],
+                               stop_loss_k=cfg.strategy.stop_loss_k,
+                               take_profit_k=cfg.strategy.take_profit_k,
+                               max_holding_bars=cfg.strategy.max_holding_bars,
+                               cooldown_bars=cfg.strategy.cooldown_bars,
+                               costs=cfg.costs, risk=cfg.risk, equity0=equity0,
+                               granularity=cfg.data.granularity,
+                               proba=p, threshold=cfg.model.threshold)
+            if res.metrics:
+                rows.append({"symbol": symbol, "variant": variant,
+                             **{k: v for k, v in res.metrics.items()}})
+
+    comparison = compare_filter(cfg, ds, oos, equity0=equity0)
+    verdict = ""
+    if not comparison.empty:
+        best = comparison.sort_values("expectancy_r", ascending=False).iloc[0]
+        n, t = float(best["n_trades"]), float(best.get("t_stat") or 0)
+        verdict = (f"only {int(n)} trades - not enough evidence" if n < 100 else
+                   f"best variant: t-stat {t:.2f} - indistinguishable from luck" if t < 2 else
+                   f"best variant: {best['expectancy_r']:+.4f}R, t-stat {t:.2f} - paper trade it next")
+    return {
+        "rows": rows,
+        "comparison": comparison.to_dict(orient="records") if not comparison.empty else [],
+        "folds": report.to_dict(orient="records") if not report.empty else [],
+        "n_events": int(len(ds.X)),
+        "positive_rate": float(ds.y.mean()),
+        "verdict": verdict,
+    }
 
 
 def load_frames(cfg: Config, symbols: Optional[List[str]] = None) -> Dict[str, pd.DataFrame]:

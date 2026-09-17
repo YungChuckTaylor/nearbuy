@@ -21,6 +21,7 @@ from .broker import DerivBroker
 from .config import Config
 from .deriv import DerivClient, connect_with_retry
 from .features import compute_features
+from .news import NewsFilter
 from .risk import RiskManager, build_order
 from .state import StateStore, make_store
 from .strategy import signal_at
@@ -29,8 +30,13 @@ log = logging.getLogger(__name__)
 
 
 async def prepare_frame(client, symbol: str, cfg: Config,
-                        server_time: Optional[int] = None) -> pd.DataFrame:
-    """Fetch candles, drop the forming bar, compute features."""
+                        server_time: Optional[int] = None,
+                        news: Optional[NewsFilter] = None) -> pd.DataFrame:
+    """Fetch candles, drop the forming bar, compute features.
+
+    When a `NewsFilter` is supplied the frame carries a `news_blocked` column so
+    the live path applies exactly the same filter as the backtester.
+    """
     resp = await client.candles(symbol, granularity=cfg.data.granularity,
                                 count=cfg.data.live_bars)
     candles = resp.get("candles") or []
@@ -40,13 +46,16 @@ async def prepare_frame(client, symbol: str, cfg: Config,
     df = data_mod.drop_incomplete(df, cfg.data.granularity, server_time)
     if len(df) < 250:
         return pd.DataFrame()
-    return compute_features(
+    frame = compute_features(
         df,
         lookback=cfg.strategy.lookback,
         atr_period=cfg.strategy.atr_period,
         ema_fast=cfg.strategy.ema_fast,
         ema_slow=cfg.strategy.ema_slow,
     )
+    if news is not None and cfg.news.enabled:
+        frame["news_blocked"] = news.blocked_mask(frame.index, symbol)
+    return frame
 
 
 async def reconcile(broker: DerivBroker, store: StateStore) -> int:
@@ -83,6 +92,11 @@ async def run_cycle(cfg: Config, client: Optional[DerivClient] = None,
         client = await connect_with_retry(cfg.deriv, authorize=bool(cfg.deriv.token))
     broker = DerivBroker(client, cfg.deriv, cfg.costs)
     risk_mgr = RiskManager(cfg.risk, store=store)
+    news = NewsFilter(cfg.news)
+    if cfg.news.enabled:
+        n_events = news.refresh()
+        log.info("news calendar: %s events loaded (feed=%s)%s", n_events, cfg.news.feed,
+                 f" ERROR: {news.last_error}" if news.last_error else "")
 
     summary: Dict[str, dict] = {"decisions": {}, "errors": {}, "opened": [], "closed": 0}
     try:
@@ -116,14 +130,18 @@ async def run_cycle(cfg: Config, client: Optional[DerivClient] = None,
         open_symbols = {p.get("symbol") for p in live_positions}
         open_symbols |= {p.get("symbol") for p in store.state.open_positions.values()}
 
+        if cfg.news.enabled and not dry_run:
+            await _flatten_into_news(broker, store, news, cfg)
+
         for symbol in (symbols or cfg.data.symbols):
             try:
-                frame = await prepare_frame(client, symbol, cfg, server_time)
+                frame = await prepare_frame(client, symbol, cfg, server_time, news=news)
                 if frame.empty:
                     summary["errors"][symbol] = "not enough data"
                     continue
                 decision = signal_at(frame, cfg.strategy, model=model,
-                                     threshold=cfg.model.threshold)
+                                     threshold=cfg.model.threshold,
+                                     news_mask=frame.get("news_blocked"))
                 store.set_last_bar(symbol, frame.index[-1])
                 if not decision:
                     summary["decisions"][symbol] = "no signal"
@@ -198,11 +216,14 @@ async def run_loop(cfg: Config, dry_run: bool = True, model=None,
     store = make_store(cfg)
     client = await connect_with_retry(cfg.deriv, authorize=bool(cfg.deriv.token))
     broker = DerivBroker(client, cfg.deriv, cfg.costs)
+    news = NewsFilter(cfg.news)
     iterations = 0
     try:
         while stop_after is None or iterations < stop_after:
             started = datetime.now(timezone.utc).timestamp()
             try:
+                if iterations % 20 == 0 and cfg.news.enabled:
+                    news.refresh()          # pick up newly scheduled events
                 await run_cycle(cfg, client=client, store=store, model=model, dry_run=dry_run)
             except Exception as exc:  # noqa: BLE001
                 log.exception("cycle error: %s", exc)
@@ -221,6 +242,37 @@ async def run_loop(cfg: Config, dry_run: bool = True, model=None,
                 broker = DerivBroker(client, cfg.deriv, cfg.costs)
     finally:
         await client.close()
+
+
+async def _flatten_into_news(broker: DerivBroker, store: StateStore, news: NewsFilter,
+                             cfg: Config) -> int:
+    """Close positions that would otherwise be carried into a Tier-1 release.
+
+    The bot's time stop is several hours, so a trade opened at 10:00 would still
+    be open at NFP. Around a release the backtest's fill assumptions stop
+    holding, so we take the position off before the window opens.
+    """
+    closed = 0
+    for contract_id, pos in list(store.state.open_positions.items()):
+        symbol = pos.get("symbol")
+        should, reason = news.should_close(symbol=symbol)
+        if not should:
+            continue
+        log.info("closing %s before news (%s)", contract_id, reason)
+        try:
+            await broker.close(int(contract_id))
+        except Exception as exc:  # noqa: BLE001
+            log.error("could not close %s before news: %s", contract_id, exc)
+            continue
+        try:
+            info = (await broker.contract_state(int(contract_id))).get("proposal_open_contract", {})
+            pnl = float(info.get("profit", 0) or 0)
+        except Exception:  # noqa: BLE001
+            pnl = 0.0
+        if contract_id in store.state.open_positions:
+            store.record_close(contract_id, pnl, {"exit_reason": f"news: {reason}"})
+        closed += 1
+    return closed
 
 
 def _seconds_until_next_bar(granularity: int, offset: float = 5.0) -> float:

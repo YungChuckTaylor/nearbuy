@@ -129,14 +129,38 @@ def cmd_synth(args, cfg: Config) -> int:
 def cmd_backtest(args, cfg: Config) -> int:
     from .backtest import run_backtest
     from .features import compute_features
-    from .pipeline import load_frames
+    from .pipeline import load_frames, run_full_backtest
     from .strategy import enforce_cooldown, primary_signals
 
     frames = load_frames(cfg)
     if not frames:
         print("no cached data: run `python -m fxbot.cli fetch-data --symbols frxEURUSD`")
         return 1
-    model = _load_model(cfg) if args.model else None
+
+    if args.model:
+        # Model variant is scored out-of-sample on purpose: a model applied to
+        # its own training bars will report a fantasy win rate.
+        result = run_full_backtest(cfg, frames, equity0=args.equity)
+        print("\n=== rules vs model filter (model scored OUT-OF-SAMPLE) ===")
+        for row in result["rows"]:
+            if not row.get("n_trades"):
+                print(f"{row['symbol']:<12} {row['variant']:<32} no trades")
+                continue
+            print(f"{row['symbol']:<12} {row['variant']:<32} "
+                  f"trades={int(row['n_trades']):<5} win={row['win_rate']:.3f} "
+                  f"exp={row['expectancy_r']:+.3f}R  t={row['t_stat']:.2f}  "
+                  f"cost={row['commission_pct_of_risk']:.1f}% of risk")
+        if result["comparison"]:
+            print()
+            for row in result["comparison"]:
+                print(f"{row['variant']:<34} trades={int(row['n_trades']):<5} "
+                      f"exp={row['expectancy_r']:+.4f}R  t={row['t_stat']:.2f}  "
+                      f"PF={row['profit_factor']:.2f}  "
+                      f"return={row['total_return_pct']:+.1f}%  maxDD={row['max_drawdown_pct']:.1f}%")
+        print(f"\nverdict: {result['verdict']}")
+        return 0
+
+    model = None
     for symbol, df in frames.items():
         feats = compute_features(df, lookback=cfg.strategy.lookback,
                                  atr_period=cfg.strategy.atr_period,
@@ -333,6 +357,80 @@ async def _status(cfg: Config) -> None:
         await client.close()
 
 
+# ---------------------------------------------------------------------- news
+def cmd_news(args, cfg: Config) -> int:
+    """Show the blackout calendar and current blocking state."""
+    import json as _json
+    from datetime import datetime, timezone
+
+    from .news import FileCalendar, NewsEvent, NewsFilter
+
+    if args.add:
+        parts = [x.strip() for x in args.add.split(",")]
+        if len(parts) < 3:
+            print("--add wants: TIME,CURRENCY,NAME[,IMPACT]  e.g. 2026-10-02T12:30:00Z,USD,US NFP,3")
+            return 2
+        event = NewsEvent.from_dict({"time": parts[0], "currency": parts[1], "name": parts[2],
+                                     "impact": int(parts[3]) if len(parts) > 3 else 3})
+        path = Path(cfg.news.calendar_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        existing = FileCalendar(path).events()
+        existing = [e for e in existing if not (e.time == event.time and e.name == event.name)]
+        existing.append(event)
+        existing.sort(key=lambda e: e.time)
+        path.write_text(_json.dumps({"events": [e.to_dict() for e in existing]}, indent=2))
+        print(f"added {event.name} @ {event.time.isoformat()} -> {path}")
+
+    if args.remove:
+        path = Path(cfg.news.calendar_path)
+        events = [e for e in FileCalendar(path).events() if args.remove.lower() not in e.name.lower()]
+        path.write_text(_json.dumps({"events": [e.to_dict() for e in events]}, indent=2))
+        print(f"removed matching '{args.remove}'; {len(events)} event(s) left")
+
+    nf = NewsFilter(cfg.news)
+    count = nf.refresh()
+    now = datetime.now(timezone.utc)
+    print(f"\nnews blackout: {'ON' if cfg.news.enabled else 'OFF'}  "
+          f"({count} events, feed={cfg.news.feed}{', ERROR: ' + nf.last_error if nf.last_error else ''})")
+    print(f"now {now:%Y-%m-%d %H:%M} UTC\n")
+    upcoming = nf.upcoming(limit=args.limit)
+    if upcoming:
+        print(f"{'when':>12} | {'ccy':>4} | {'impact':>6} | event")
+        print("-" * 70)
+        for e in upcoming:
+            mins = e["in_minutes"]
+            when = f"{mins:+.0f} min" if abs(mins) < 180 else f"{mins / 60:+.1f} h"
+            tag = {3: "HIGH", 2: "medium", 1: "low"}[e["impact"]]
+            print(f"{when:>12} | {e['currency']:>4} | {tag:>6} | {e['name']}"
+                  f"{' (approx)' if e.get('approx') else ''}")
+    else:
+        print("no upcoming events: the calendar is empty. Add some with --add, point")
+        print("news.calendar_path at a JSON calendar, or set news.feed=finnhub with a key.")
+    print()
+    for symbol in cfg.data.symbols:
+        blocked, why = nf.is_blocked(now, symbol)
+        close_it, close_why = nf.should_close(now, symbol)
+        flag = f"BLOCKED ({why})" if blocked else "clear"
+        extra = f" | close before: {close_why}" if close_it else ""
+        print(f"  {symbol:<12} {flag}{extra}")
+    return 0
+
+
+def cmd_serve(args, cfg: Config) -> int:
+    """Run the web dashboard."""
+    from .web.app import serve
+
+    # work whether you launch from the repo root or from fxbot/
+    path = args.config
+    if path and not Path(path).exists():
+        for candidate in ("fxbot/config.json", "config.json", "../fxbot/config.json"):
+            if Path(candidate).exists():
+                path = candidate
+                break
+    serve(host=args.host, port=args.port, config_path=path, reload=args.reload)
+    return 0
+
+
 # --------------------------------------------------------------------- brakes
 def cmd_kill(args, cfg: Config) -> int:
     from .risk import RiskManager
@@ -399,6 +497,16 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("status", help="balance, open contracts, day P&L")
 
+    c = sub.add_parser("news", help="show the blackout calendar and what is blocked now")
+    c.add_argument("--limit", type=int, default=15)
+    c.add_argument("--add", metavar="TIME,CCY,NAME[,IMPACT]", default=None)
+    c.add_argument("--remove", metavar="SUBSTRING", default=None)
+
+    c = sub.add_parser("serve", help="run the web dashboard")
+    c.add_argument("--host", default="0.0.0.0")
+    c.add_argument("--port", type=int, default=8000)
+    c.add_argument("--reload", action="store_true")
+
     c = sub.add_parser("kill", help="stop opening new trades (does not close open ones)")
     c.add_argument("--reason", default="manual")
 
@@ -438,6 +546,10 @@ def main(argv: Optional[list] = None) -> int:
     if args.command == "status":
         asyncio.run(_status(cfg))
         return 0
+    if args.command == "news":
+        return cmd_news(args, cfg)
+    if args.command == "serve":
+        return cmd_serve(args, cfg)
     if args.command == "kill":
         return cmd_kill(args, cfg)
     if args.command == "resume":

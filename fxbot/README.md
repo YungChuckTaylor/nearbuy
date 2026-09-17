@@ -64,7 +64,95 @@ Verify the numbers on your own account before trusting any backtest:
 
 ---
 
-## 2. Architecture
+## 2. The news blackout window
+
+### What it is
+
+A time window around scheduled macro releases (NFP, CPI, FOMC, ECB/BOE rate
+decisions, PMIs…) during which the bot **opens nothing**, and — optionally —
+**closes** what it is holding before the biggest ones. Typical settings:
+
+| Tier | Events | Window | Why |
+|---|---|---|---|
+| High | NFP, CPI, FOMC, rate decisions | 30 min before → 30 min after | Volume and volatility jump from ~30 min before to ~30 min after, and spreads blow out [3](https://public.econ.duke.edu/~boller/Published_Papers/restud_18.pdf) |
+| Medium | PMI, retail sales, jobless claims | 10 min before → 10 min after | Shorter-lived impact |
+| Low | minor regional data | none | Not worth the lost trades |
+
+It is **currency-scoped**: US data blocks `frxEURUSD` and `frxUSDJPY`, but not
+`frxEURGBP` [3](https://www.mt4copier.com/news-filter-copier/).
+
+### Why it exists (the mechanics, not the vibes)
+
+Two things happen at a release, and both invalidate a short-term system's
+assumptions:
+
+1. **Liquidity vanishes.** Market makers pull top-of-book quotes rather than
+   take directional risk into a print. Retail spreads on majors go from sub-pip
+   to 5–30 pips for seconds to minutes. Your stop is then triggered by the *ask*
+   several pips beyond the level your chart shows — the classic "phantom
+   stop-out" [2](https://fxnx.com/en/blog/spread-widening-scheduled-news-peaks-recovery-times).
+2. **Price jumps instead of walking.** Macro surprises produce discontinuities,
+   and the largest FX jumps cluster around scheduled announcements. Ederington &
+   Lee [5](https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1540-6261.1993.tb04750.x)
+   found the bulk of the adjustment happens within the first minute, with
+   volatility elevated ~15 minutes and still slightly elevated for hours.
+
+So the filter is not trying to *trade* the news — it is protecting the
+**validity of your backtest**. The backtester assumes you exit near your stop.
+Around a release you do not, so those bars are exactly where your live results
+diverge from your simulated ones.
+
+### Does it improve the bot?
+
+Honestly: **it is a risk filter, not an edge. Expect the tail to improve, not
+the headline number.**
+
+* **What it reliably fixes:** the worst trades. For a breakout system, news
+  spikes punch through a channel and retrace within minutes — the bot buys the
+  spike and eats a full stop. Those losses cluster in a handful of minutes per
+  month, and removing them improves max drawdown, worst-trade and profit factor
+  more than it improves average expectancy.
+* **What it costs:** trades. NFP is monthly, CPI monthly, FOMC eight times a
+  year — with 30/30 windows that is ~2–4% of trading hours removed, plus
+  whatever your medium-tier events remove. Fewer trades means *less* statistical
+  power when you evaluate everything else.
+* **What it will not do:** make a bad strategy good. On synthetic noise the
+  blackout changes almost nothing, because there is no news in synthetic noise.
+* **The strongest argument for it is not expectancy at all.** It is that your
+  backtest cannot model a 20-pip spread expansion, so the honest options are
+  "don't trade there" or "accept that this slice of your results is fiction".
+
+You can measure it yourself rather than take my word for it:
+
+```bash
+python -m fxbot.cli backtest            # baseline
+# set news.enabled = false in fxbot/config.json
+python -m fxbot.cli backtest            # compare expectancy, max DD, worst trade
+```
+
+Compare `max_drawdown_pct` and the worst single trade, not just `expectancy_r`.
+If the blackout makes no difference at all on *real* data, your calendar is
+probably empty (check `python -m fxbot.cli news`).
+
+### Calendars
+
+| `news.feed` | Source | Notes |
+|---|---|---|
+| `file` | `data/fxbot/news.json` | You maintain it. Add with `news --add "2026-10-02T12:30:00Z,USD,US NFP,3"` |
+| `finnhub` | Finnhub `/calendar/economic` | Free key, set `news.finnhub_token` + UTC offset |
+| `rules` | Built-in recurring rules | NFP is exact (first Friday, 8:30 New York). CPI is **approximate** — verify against the BLS calendar |
+| `auto` (default) | file → finnhub → rules |  |
+
+A missing or broken calendar degrades to "no events", never to a crash.
+
+One gap worth knowing: the filter blocks **entries**. With an 8-hour time stop a
+position opened at 10:00 would still be open at NFP, so `news.close_before_high`
+(default on) flattens those positions `close_lead_minutes` before a high-impact
+event.
+
+---
+
+## 3. Architecture
 
 ```
                      ┌────────── research (offline, repeatable) ──────────┐
@@ -94,7 +182,9 @@ Verify the numbers on your own account before trusting any backtest:
 | `broker.py` | proposal → buy → reconcile, cost probing |
 | `state.py` | crash-safe state (JSON file or Upstash REST) |
 | `engine.py` | the loop, plus a one-shot cycle for cron/serverless |
+| `news.py` | economic-calendar blackout filter (file / Finnhub / recurring rules) |
 | `pipeline.py` | dataset → purged walk-forward CV → OOS comparison |
+| `web/` | dashboard: FastAPI backend + vanilla-JS UI (see below) |
 
 **Why the ML model doesn't predict direction.** A single model asked "will EURUSD
 go up in 15 minutes?" has to learn direction, timing and regime from a tiny
@@ -109,7 +199,7 @@ worse on this data and impossible to debug — don't.
 
 ---
 
-## 3. Quickstart
+## 4. Quickstart
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
@@ -148,7 +238,7 @@ distinguish this from luck. Do not fund it.
 
 ---
 
-## 4. Can I run this on Vercel?
+## 5. Can I run this on Vercel?
 
 **Short answer: yes for the plumbing, no as your primary home.** Vercel has no
 persistent process, and a trading bot wants one. But the bot is deliberately
@@ -210,7 +300,50 @@ vercel deploy --prod
 
 ---
 
-## 5. Before you fund it
+## 6. The dashboard
+
+```bash
+pip install -r requirements-web.txt
+python -m fxbot.cli serve            # http://localhost:8000
+```
+
+A single-page UI (no build step, no npm) over a FastAPI backend:
+
+| Tab | What it gives you |
+|---|---|
+| **Overview** | balance/equity, day P&L, win rate, open positions, recent trades, equity curve, and the live **cost reality check** (commission % of risk, break-even hit rate) |
+| **Signals** | scan every symbol now: side, P(win), TAKE/SKIP, and whether the news blackout is blocking it |
+| **Parameters** | every parameter in 7 groups, with ranges, clamping and help text. Edits are validated server-side and written to `config.json` |
+| **Research** | run fetch-data / backtest / train as background jobs and stream their logs |
+| **News blackout** | upcoming events, per-symbol blocked/clear status, add events by hand |
+| **Logs** | live server log tail |
+
+Controls: kill switch, resume, run one cycle now, close a single contract,
+close everything, and switch the process between paper and live mode.
+
+**Safety model.** The process starts in `FXBOT_MODE` (paper by default) and
+endpoints that move money return `409` while it is in paper mode — switching to
+live is an explicit `POST /api/mode {"mode":"live"}` and requires a Deriv token.
+Set `FXBOT_WEB_TOKEN` to require `Authorization: Bearer <token>` on every
+`/api/*` call; without it the UI shows a warning banner, because an open
+dashboard can place trades.
+
+Docker one-liner for a host instead of running it locally:
+
+```bash
+docker build -t fxbot . && docker run -d -p 8000:8000 \
+  -e FXBOT_WEB_TOKEN=$(openssl rand -hex 16) -e FXBOT_MODE=paper \
+  -v fxbot_data:/app/data fxbot python -m fxbot.cli serve
+```
+
+> **The backtest job always scores the model OUT-OF-SAMPLE.** While wiring this
+> up I watched an in-sample run report a **92% win rate and +1.5R on synthetic
+> random noise** — the model had simply memorised its training bars. The same
+> configuration scored honestly is −0.5R with a t-stat of −9. If your tooling
+> lets you evaluate a model on its own training data, you will eventually
+> believe a lie like that one.
+
+## 7. Before you fund it
 
 Work through this list. Skipping a line is how accounts die.
 
@@ -220,6 +353,7 @@ Work through this list. Skipping a line is how accounts die.
       just on average — one bad fold means regime dependence, not an edge
 - [ ] Out-of-sample expectancy has **t-stat ≥ 2** over **≥ 100 trades**
 - [ ] `compare_filter` shows the model's filter beating "take every setup"
+- [ ] News calendar is populated (`python -m fxbot.cli news` lists real events)
 - [ ] Paper traded ≥ 100 live trades, and live fills match backtest assumptions
       (check the state file's realised P&L vs. the backtest's expectancy)
 - [ ] Stake is small enough that a 20-trade losing streak doesn't hurt
@@ -232,8 +366,9 @@ filter, cooldown between entries, and a kill switch that survives restarts.
 
 **Known gaps** (fix before scaling, in rough priority order):
 
-1. **No economic-calendar filter.** High-impact news (NFP, CPI, FOMC) will gap
-   through stops. Add a blackout window around scheduled releases.
+1. **Calendar completeness.** The built-in rules know NFP (exact) and CPI
+   (approximate). Everything else — FOMC, ECB/BOE, PMIs — needs your JSON file
+   or a Finnhub key. An empty calendar means an unfiltered bot.
 2. **Session hours ignore DST.** The London/NY windows shift by an hour twice a
    year; `features.session_flags` uses fixed UTC hours.
 3. **Spread is a fixed assumption** (`CostConfig.spread_bps`), not measured.
@@ -245,7 +380,7 @@ filter, cooldown between entries, and a kill switch that survives restarts.
 
 ---
 
-## 6. Tuning
+## 8. Tuning
 
 Everything lives in `fxbot/config.json` (generate with `python -m fxbot.cli
 config`; env vars override it).
@@ -259,6 +394,9 @@ config`; env vars override it).
 | `risk.risk_per_trade_pct` | risk | 0.25–0.5% is sane; 2%+ is how accounts die |
 | `risk.multiplier` | risk | Leverage per contract. Does **not** change cost/risk ratio |
 | `strategy.session_start_hour` / `_end_hour` | strategy | Concentrate on London/NY overlap |
+| `news.enabled` / `news.min_impact` | news | Turn the blackout on and set which tiers block |
+| `news.minutes_before_high` / `_after_high` | news | 30/30 is the standard Tier-1 window |
+| `news.feed` / `news.calendar_path` | news | Where the events come from |
 
 A reasonable experiment loop:
 
@@ -275,7 +413,7 @@ are there to protect you from.
 
 ---
 
-## 7. Tests
+## 9. Tests
 
 ```bash
 python -m pytest -q
@@ -293,10 +431,15 @@ profits:
 * `test_backtest.py::test_on_random_walk_edge_is_not_miraculous` — synthetic
   noise must not produce a fat positive edge
 * `test_risk.py::test_cost_inverse_to_stop_width` — the cost maths
+* `test_news.py` — blackout windows, currency scoping, the vectorised mask that
+  the backtester uses must agree with the live check, and a broken calendar must
+  degrade to "no events" instead of raising
+* `test_web.py` — every parameter is exposed with a current value, edits persist
+  and are clamped, money endpoints refuse to run in paper mode, token auth works
 
 ---
 
-## 8. Licence / responsibility
+## 10. Licence / responsibility
 
 You own every trade this places. Start with the smallest stake Deriv allows and
 size up only after the paper-trading statistics hold up for a few hundred live
