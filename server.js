@@ -20,7 +20,7 @@ const PUBLIC_DIR = path.join(__dirname, 'public');
 const DATA_FILE = path.join(__dirname, 'data', 'db.json');
 const PORT = Number(process.env.PORT || 3000);
 const SECRET = process.env.NBG_SECRET || 'nbg-dev-secret-change-in-prod';
-const VERSION = '1.1.0';
+const VERSION = '1.1.1';
 
 /* ------------------------------------------------------------------ db ---- */
 /* Three storage modes, chosen automatically:
@@ -397,7 +397,9 @@ function storeMatchBump(store, offer) { store.matches = (store.matches || 0) + 0
 
 route('POST', '/api/v1/recognize', (ctx) => {
   const s = ctx.body?.signals || {};
-  const tokens = [...new Set(`${s.filename || ''} ${s.text || ''}`.toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length > 2))];
+  // Camera/library filenames are noise ("IMG_2026…", "camera.jpg", "screenshot…")
+  const FILE_NOISE = new Set(['jpg', 'jpeg', 'png', 'webp', 'heic', 'gif', 'bmp', 'img', 'image', 'photo', 'camera', 'screenshot', 'pic', 'dsc', 'vid', 'video', 'download', 'whatsapp', 'telegram', 'file', 'copy']);
+  const tokens = [...new Set(`${s.filename || ''} ${s.text || ''}`.toLowerCase().split(/[^a-z0-9]+/).filter((t) => t.length > 2 && !FILE_NOISE.has(t)))];
   const colors = Array.isArray(s.colors) ? s.colors.slice(0, 4) : [];
   const catHint = (s.category || '').toLowerCase();
   const brandHint = (s.brand || '').toLowerCase();
@@ -406,20 +408,69 @@ route('POST', '/api/v1/recognize', (ctx) => {
     const pb = [1, 3, 5].map((i) => parseInt(b.slice(i, i + 2), 16));
     return Math.hypot(pa[0] - pb[0], pa[1] - pb[1], pa[2] - pb[2]);
   };
+  const inStockOffers = new Map(db.offers.filter((o) => o.stock > 0).map((o) => [o.product_id, (db.offers.filter((x) => x.product_id === o.product_id && x.stock > 0).length)]));
+  // Color rarity (IDF-style): matching a color few products share is strong
+  // evidence; matching the ubiquitous near-white/near-black is weak.
+  const rarityOf = new Map();
+  for (const p of db.products) for (const pc of p.colors) {
+    const count = db.products.filter((q) => q.id !== p.id && q.colors.some((qc) => hexDist(qc, pc) < 90)).length;
+    rarityOf.set(p.id + ':' + pc, 1 / (1 + Math.log2(1 + count)));
+  }
   const candidates = db.products.map((p) => {
     let score = 0; const matched = [];
     if (s.barcode && p.barcode === s.barcode) { score += 0.95; matched.push('barcode'); }
+    const nameLow = p.name.toLowerCase(), brandLow = p.brand.toLowerCase();
     const hay = `${p.name} ${p.brand} ${p.tags.join(' ')} ${p.category}`.toLowerCase();
-    const hitTokens = tokens.filter((t) => hay.includes(t));
-    if (hitTokens.length) { score += Math.min(0.6, hitTokens.length * 0.22); matched.push(`text:${hitTokens.slice(0, 3).join(',')}`); }
+    if (tokens.length) {
+      // Weighted: a token hitting the product NAME is strong evidence; brand next;
+      // tags/category weaker. (Was: flat 0.22/token, which made a single keyword
+      // like "rice" fall below the reporting threshold entirely.)
+      let tScore = 0; const hits = [];
+      for (const t of tokens) {
+        let w = 0;
+        if (nameLow.includes(t)) w = 0.3;
+        else if (brandLow.includes(t)) w = 0.25;
+        else if (hay.includes(t)) w = 0.15;
+        if (w > 0) { tScore += w; hits.push(t); }
+      }
+      if (tScore) { score += Math.min(0.6, tScore); matched.push(`text:${hits.slice(0, 3).join(',')}`); }
+    }
     if (colors.length && p.colors.length) {
-      const close = colors.some((c) => p.colors.some((pc) => hexDist(c, pc) < 90));
-      if (close) { score += 0.3; matched.push('color'); }
+      // Graded color evidence: each of the photo's dominant colors contributes
+      // proportionally to how CLOSELY it matches a product color, and how RARE
+      // that product color is in the catalog. Color alone now needs multiple
+      // strong matches to clear the 0.25 threshold — a single coincidental
+      // black/white overlap no longer qualifies a product.
+      // (Was: flat +0.3 for ANY overlap within 90, which — since most products
+      // are near-black/near-white and most photos contain dark+light regions —
+      // made nearly every photo return the same first-4 products at "30%".)
+      let colorScore = 0, pairs = 0;
+      for (const c of colors) {
+        let best = 0;
+        for (const pc of p.colors) {
+          const d = hexDist(c, pc);
+          if (d < 90) {
+            const rarity = rarityOf.get(p.id + ':' + pc) ?? 0.5;
+            best = Math.max(best, (1 - d / 90) * (0.10 + 0.18 * rarity));
+          }
+        }
+        if (best > 0) { colorScore += best; pairs++; }
+      }
+      if (colorScore > 0) {
+        score += Math.min(0.42, colorScore);
+        if (pairs > 1) matched.push(`color:${pairs}`);
+      }
     }
     if (catHint && p.category === catHint) { score += 0.15; matched.push('category'); }
-    if (brandHint && p.brand.toLowerCase().includes(brandHint)) { score += 0.2; matched.push('brand'); }
+    if (brandHint && brandLow.includes(brandHint)) { score += 0.2; matched.push('brand'); }
     return { p, score: Math.min(0.97, score), matched };
-  }).filter((c) => c.score > 0.25).sort((a, b) => b.score - a.score).slice(0, 4);
+  }).filter((c) => c.score > 0.25)
+    // Deterministic ranking: score, then availability (in-stock offers), then id —
+    // never database order.
+    .sort((a, b) => b.score - a.score
+      || (inStockOffers.get(b.p.id) || 0) - (inStockOffers.get(a.p.id) || 0)
+      || (a.p.id < b.p.id ? -1 : a.p.id > b.p.id ? 1 : 0))
+    .slice(0, 4);
   const origin = { lat: ctx.body?.lat ?? ctx.user?.prefs?.lat ?? 6.5244, lng: ctx.body?.lng ?? ctx.user?.prefs?.lng ?? 3.3792 };
   const out = candidates.map((c) => {
     const offer = db.offers.filter((o) => o.product_id === c.p.id && o.stock > 0).sort((a, b) => a.price - b.price)[0];
