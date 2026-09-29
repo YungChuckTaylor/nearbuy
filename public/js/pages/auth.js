@@ -17,8 +17,11 @@ export function renderAuth(onDone) {
     h('button', { class: 'active', onclick: () => setMode('login') }, 'Log in'),
     h('button', { onclick: () => setMode('register') }, 'Create account'));
 
-  const email = h('input', { class: 'input', type: 'email', placeholder: 'Email', autocomplete: 'email', value: 'shopper@nearbuygoods.app' });
-  const pass = h('input', { class: 'input', type: 'password', placeholder: 'Password', autocomplete: 'current-password', value: 'demo1234' });
+  // Demo quick-fill only in demo mode (local dev / preview deployments) — in
+  // production there is no demo card and no prefilled credentials.
+  const demoOn = !!state.meta?.demo_mode;
+  const email = h('input', { class: 'input', type: 'email', placeholder: 'Email', autocomplete: 'email', value: demoOn ? 'shopper@nearbuygoods.app' : '' });
+  const pass = h('input', { class: 'input', type: 'password', placeholder: 'Password', autocomplete: 'current-password', value: demoOn ? 'demo1234' : '' });
   const name = h('input', { class: 'input', placeholder: 'Full name', autocomplete: 'name' });
   const role = h('select', { class: 'input' },
     h('option', { value: 'shopper', text: 'I shop — find items near me' }),
@@ -57,7 +60,7 @@ export function renderAuth(onDone) {
     submit.disabled = false;
   }
 
-  const demo = h('div', { class: 'card', style: { marginTop: '12px' } },
+  const demo = demoOn ? h('div', { class: 'card', style: { marginTop: '12px' } },
     h('div', { class: 'tiny bold muted', style: { marginBottom: '8px' }, text: 'DEMO ACCOUNTS (password: demo1234)' }),
     ...[
       ['🛒 Shopper', 'shopper@nearbuygoods.app'],
@@ -65,7 +68,7 @@ export function renderAuth(onDone) {
       ['⚙️ Admin', 'admin@nearbuygoods.app'],
     ].map(([label, em]) => h('button', {
       class: 'listrow', onclick: () => { email.value = em; pass.value = 'demo1234'; setMode('login'); submitFn(); },
-    }, h('span', { class: 'ic' }, ic('user', 18)), h('span', { class: 'col grow' }, h('span', { class: 'bold small', text: label }), h('span', { class: 'tiny muted', text: em })), h('span', { class: 'chev' }, ic('arrowR', 16)))));
+    }, h('span', { class: 'ic' }, ic('user', 18)), h('span', { class: 'col grow' }, h('span', { class: 'bold small', text: label }), h('span', { class: 'tiny muted', text: em })), h('span', { class: 'chev' }, ic('arrowR', 16))))) : null;
 
   const guest = h('button', { class: 'btn outline block', style: { marginTop: '12px' }, onclick: () => onDone() }, 'Continue as guest');
 
@@ -77,7 +80,7 @@ export function renderAuth(onDone) {
     submit,
     h('p', { class: 'tiny muted', style: { margin: '12px 0 0', textAlign: 'center' }, text: 'Social login (Google/Apple), OTP & biometrics are wired as extension points — see docs/RESEARCH.md §1.' }));
 
-  root.append(head, form, demo, guest);
+  root.append(head, form, ...(demo ? [demo] : []), guest);
   setMode('login');
   return root;
 }

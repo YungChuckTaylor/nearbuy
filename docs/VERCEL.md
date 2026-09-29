@@ -79,15 +79,30 @@ GitHub gives you automatic redeploys on every push, which you'll want.)
    receipts survive forever (free tier: ~10 000 DB commands/day — far above
    demo/small-business traffic).
 
-## Step 4 — set the secret key (≈1 min)
+## Step 4 — set the secret key (≈1 min) — REQUIRED before launch
 
 Settings → Environment Variables → add:
 
 - `NBG_SECRET` = a long random string. Generate one:
   - Windows PowerShell: `-join(((48..57)+(65..90)+(97..122)) | Get-Random -Count 48 | ForEach-Object {[char]$_})`
   - macOS/Linux: `openssl rand -hex 32`
-- Redeploy once more. (Without it the app falls back to a development secret —
-  fine for tinkering, not for launch.)
+- Redeploy once more.
+
+Production deployments **refuse to sign or verify auth tokens while
+`NBG_SECRET` is unset** — login/signup return a 503 with instructions, and a
+prominent error appears in the function logs. Guest browsing keeps working.
+(This closes the hole where the fallback dev secret, visible in the public
+repo, could be used to forge admin tokens.)
+
+While you're on that screen, two more production variables:
+
+- `NBG_ADMIN_EMAIL` + `NBG_ADMIN_PASSWORD` — your founder account. On boot the
+  account is created (or promoted) with the **admin** role, so you get the
+  admin dashboard without the demo credentials.
+- `NBG_DEMO_MODE` = `1` (optional) — keep the demo experience (advertised demo
+  accounts + `demo1234` passwords) on production. Leave it unset for a real
+  launch: demo credentials disappear from the app and seeded demo accounts get
+  random, unknown passwords.
 
 Optional, same screen: `PAYSTACK_SECRET_KEY` (test key) to switch payments
 from the built-in simulator to real Paystack test mode.
@@ -97,7 +112,9 @@ from the built-in simulator to real Paystack test mode.
 1. Open the NearBuyGoods Android app (the APK from `android/`).
 2. First-run dialog — or **Profile → App server address** — enter your Vercel
    URL exactly, e.g. `https://nearbuygoods-<your-name>.vercel.app` → **Connect**.
-3. Done. Log in (`shopper@nearbuygoods.app` / `demo1234`), search, scan,
+3. Done. Log in (with `NBG_DEMO_MODE=1`: `shopper@nearbuygoods.app` /
+   `demo1234`; otherwise create your own account — or use your
+   `NBG_ADMIN_EMAIL` founder account), search, scan,
    reserve. Works on mobile data with your computer switched off. 🎉
 
 The browser/PWA version is the same URL — on your phone's browser menu choose
