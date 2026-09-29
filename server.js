@@ -21,6 +21,15 @@ const DATA_FILE = path.join(__dirname, 'data', 'db.json');
 const PORT = Number(process.env.PORT || 3000);
 const SECRET = process.env.NBG_SECRET || 'nbg-dev-secret-change-in-prod';
 const VERSION = '1.1.1';
+/* Production posture. On a Vercel production deployment (or NODE_ENV=production):
+ *  - the default dev secret is REFUSED for signing/verifying auth tokens
+ *  - demo credentials are not advertised and seeded demo users get random
+ *    passwords (the ones documented in the repo must not work)
+ *  Override with NBG_DEMO_MODE=1 (demo on) or =0 (demo off) if needed. */
+const IS_PROD = process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production';
+const INSECURE_SECRET = SECRET === 'nbg-dev-secret-change-in-prod';
+const DEMO_MODE = process.env.NBG_DEMO_MODE === '1' ? true : process.env.NBG_DEMO_MODE === '0' ? false : !IS_PROD;
+const SECRET_ERROR = 'NBG_SECRET is not set — auth is disabled on this deployment. Add NBG_SECRET under Vercel → Settings → Environment Variables, then Redeploy. (Guest browsing keeps working.)';
 
 /* ------------------------------------------------------------------ db ---- */
 /* Three storage modes, chosen automatically:
@@ -43,7 +52,10 @@ let storageReady = false;
 function seedDb() {
   const seeded = buildSeed();
   for (const u of seeded.users) {
-    const { hash, salt } = hashPassword('demo1234');
+    // In demo mode the documented password works (great for local dev/previews).
+    // Outside demo mode every seeded account gets its own random password, so
+    // the credentials printed in the repo/README are useless on production.
+    const { hash, salt } = hashPassword(DEMO_MODE ? 'demo1234' : crypto.randomBytes(16).toString('hex'));
     u.pass_hash = hash; u.salt = salt;
   }
   return seeded;
@@ -61,6 +73,9 @@ async function kvCmd(cmd) {
 
 export async function initStorage() {
   if (storageReady) return;
+  // Cold-start warnings for the two things that silently ruin a production deploy.
+  if (IS_PROD && INSECURE_SECRET) console.error('⚠️  NBG_SECRET is not set! Login/signup are disabled (503) until you add it: Vercel → Settings → Environment Variables → NBG_SECRET → Redeploy. Guest browsing keeps working.');
+  if (onVercel && !kvMode) console.error('⚠️  No KV store attached — data is EPHEMERAL: accounts, saves and reservations reset on every cold start. Attach Vercel KV (docs/VERCEL.md, step 3).');
   if (kvMode) {
     try {
       const blob = await kvCmd(['GET', KV_KEY]);
@@ -76,25 +91,17 @@ export async function initStorage() {
       }
     } catch (e) { console.error('[kv] load failed:', e.message); }
     if (!db) { db = seedDb(); saveDb(true); }
-    db.push_subs = db.push_subs || []; db.payments = db.payments || []; db.collections = db.collections || [];
-    storageReady = true;
-    return;
-  }
-  if (onVercel) {           // ephemeral demo mode
+  } else if (onVercel) {     // ephemeral demo mode
     db = seedDb();
-    db.push_subs = db.push_subs || []; db.payments = db.payments || []; db.collections = db.collections || [];
-    storageReady = true;
-    return;
-  }
-  if (fs.existsSync(DATA_FILE)) {
+  } else if (fs.existsSync(DATA_FILE)) {
     db = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-    db.push_subs = db.push_subs || [];
-    db.payments = db.payments || [];
-    db.collections = db.collections || [];
   } else {
     db = seedDb();
     saveDb(true);
   }
+  db.push_subs = db.push_subs || []; db.payments = db.payments || []; db.collections = db.collections || [];
+  ensureAdminFromEnv();
+  saveDb();
   storageReady = true;
 }
 
@@ -128,12 +135,14 @@ function hashPassword(pw, salt = crypto.randomBytes(16).toString('hex')) {
 }
 const b64u = (buf) => Buffer.from(buf).toString('base64url');
 function signToken(payload) {
+  if (IS_PROD && INSECURE_SECRET) throw new Error(SECRET_ERROR);
   const head = b64u(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
   const body = b64u(JSON.stringify({ ...payload, iat: Math.floor(Date.now() / 1000) }));
   const sig = crypto.createHmac('sha256', SECRET).update(`${head}.${body}`).digest('base64url');
   return `${head}.${body}.${sig}`;
 }
 function verifyToken(tok) {
+  if (IS_PROD && INSECURE_SECRET) return null; // never trust the default dev secret in production
   try {
     const [h, b, s] = tok.split('.');
     const expect = crypto.createHmac('sha256', SECRET).update(`${h}.${b}`).digest('base64url');
@@ -277,7 +286,7 @@ route('POST', '/api/v1/auth/register', (ctx) => {
     id: nid('user'), name, email, phone: phone || null,
     role: ['shopper', 'store_owner'].includes(role) ? role : 'shopper',
     pass_hash: hash, salt, points: 25, stats: { searches: 0, saves: 0, reviews: 0, reservations: 0 }, badges: [],
-    prefs: { radius_km: 10, units: 'km', currency: 'NGN', lat: 6.5244, lng: 3.3792, loc_label: 'Lagos, NG', notify_push: true, notify_email: false, notify_deals: true, notify_stock: true, font_scale: 1, high_contrast: false, reduce_motion: false },
+    prefs: defaultPrefs(),
     created: new Date().toISOString(),
   };
   db.users.push(user);
@@ -309,17 +318,49 @@ function publicUser(u) {
   const { pass_hash, salt, ...rest } = u;
   return rest;
 }
+function defaultPrefs() {
+  return { radius_km: 10, units: 'km', currency: 'NGN', lat: 6.5244, lng: 3.3792, loc_label: 'Lagos, NG', notify_push: true, notify_email: false, notify_deals: true, notify_stock: true, font_scale: 1, high_contrast: false, reduce_motion: false };
+}
+/* Founder admin access without demo credentials: set NBG_ADMIN_EMAIL (and
+ * optionally NBG_ADMIN_PASSWORD) — the account is created or promoted on boot.
+ * Without a password a random one is generated and logged once. */
+function ensureAdminFromEnv() {
+  const email = (process.env.NBG_ADMIN_EMAIL || '').toLowerCase().trim();
+  if (!email) return;
+  const pw = process.env.NBG_ADMIN_PASSWORD || '';
+  let u = db.users.find((x) => x.email === email);
+  if (!u) {
+    const { hash, salt } = hashPassword(pw || crypto.randomBytes(12).toString('hex'));
+    u = {
+      id: nid('user'), name: process.env.NBG_ADMIN_NAME || 'Admin', email, phone: null, role: 'admin',
+      pass_hash: hash, salt, points: 25, stats: { searches: 0, saves: 0, reviews: 0, reservations: 0 }, badges: [],
+      prefs: defaultPrefs(), created: new Date().toISOString(),
+    };
+    db.users.push(u);
+    if (!pw) console.log(`[admin] created ${email} with a random password (set NBG_ADMIN_PASSWORD to choose it)`);
+  } else {
+    if (u.role !== 'admin') u.role = 'admin';
+    if (pw) { const { hash, salt } = hashPassword(pw); u.pass_hash = hash; u.salt = salt; }
+  }
+}
 
 /* ---- catalog & discovery ---- */
 route('GET', '/api/v1/meta', (ctx) => {
   ctx.send(200, {
     version: VERSION, currency: db.meta.currency, city: db.meta.city, feature_flags: db.meta.flags,
     categories: CATEGORIES,
-    demo_accounts: [
-      { role: 'shopper', email: 'shopper@nearbuygoods.app', password: 'demo1234' },
-      { role: 'store_owner', email: 'owner@nearbuygoods.app', password: 'demo1234' },
-      { role: 'admin', email: 'admin@nearbuygoods.app', password: 'demo1234' },
-    ],
+    demo_mode: DEMO_MODE,
+    persistence: kvMode ? 'kv' : onVercel ? 'ephemeral' : 'file',
+    // Demo credentials are only advertised in demo mode (local dev / preview
+    // deployments). Never on production, where those accounts get random
+    // passwords anyway.
+    ...(DEMO_MODE ? {
+      demo_accounts: [
+        { role: 'shopper', email: 'shopper@nearbuygoods.app', password: 'demo1234' },
+        { role: 'store_owner', email: 'owner@nearbuygoods.app', password: 'demo1234' },
+        { role: 'admin', email: 'admin@nearbuygoods.app', password: 'demo1234' },
+      ],
+    } : {}),
   });
 });
 route('GET', '/api/v1/categories', (ctx) => ctx.send(200, { categories: CATEGORIES }));
@@ -1097,7 +1138,11 @@ export async function handler(req, res) {
       };
       try { await r.handler(ctx); } catch (e) {
         console.error('[api error]', p, e);
-        if (!res.headersSent) { res.writeHead(500, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ error: 'internal error' })); }
+        const misconfigured = IS_PROD && INSECURE_SECRET && String(e?.message || '').includes('NBG_SECRET');
+        if (!res.headersSent) {
+          res.writeHead(misconfigured ? 503 : 500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: misconfigured ? e.message : 'internal error' }));
+        }
       }
       return;
     }

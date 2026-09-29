@@ -32,6 +32,10 @@ of a blank page (`js/boot-check.js` guard).
 
 ## Demo accounts (password `demo1234`)
 
+**Demo mode only** — on by default in local dev and Vercel *preview* deployments,
+off in production (override with `NBG_DEMO_MODE=1`). In production these
+accounts exist with random passwords, so the credentials below don't work there.
+
 | Role | Email | Sees |
 |---|---|---|
 | Shopper | shopper@nearbuygoods.app | watchlist, alerts, reservations |
