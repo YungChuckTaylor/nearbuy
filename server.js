@@ -14,6 +14,9 @@ import { buildSeed } from './seed/data.js';
 import { vapidPublicKeyB64u, sendPush, setKeys as restoreVapidKeys, getKeys as currentVapidKeys } from './lib/webpush.js';
 import { gzipSync, gunzipSync } from 'node:zlib';
 import * as paystack from './lib/paystack.js';
+import { openStore } from './lib/tracker/db.js';
+import { createTracker } from './lib/tracker/store.js';
+import { trackerRoutes } from './lib/tracker/routes.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = path.join(__dirname, 'public');
@@ -1059,6 +1062,24 @@ const OPENAPI = {
     '/payments/verify/{ref}': { get: { tags: ['commerce'], summary: 'Verify & fulfil payment (idempotent)', security: [{ bearerAuth: [] }] } },
     '/payments': { get: { tags: ['commerce'], summary: 'Payment history / digital receipts', security: [{ bearerAuth: [] }] } },
     '/webhooks/paystack': { post: { tags: ['commerce'], summary: 'Paystack charge.success webhook (HMAC-SHA512 verified)' } },
+    /* project tracker (docs/TRACKER.md) — its own bearer token, same server */
+    '/tracker/health': { get: { tags: ['tracker'], summary: 'Tracker storage driver + row counts' } },
+    '/tracker/auth/guest': { post: { tags: ['tracker'], summary: 'One-tap demo/guest session (demo mode only)' } },
+    '/tracker/auth/register': { post: { tags: ['tracker'], summary: 'Create a tracker account (own project + imported audit)' } },
+    '/tracker/auth/login': { post: { tags: ['tracker'], summary: 'Tracker sign-in → bearer token' } },
+    '/tracker/bootstrap': { get: { tags: ['tracker'], summary: 'Whole project in one call: workspaces, features, placements, activity', security: [{ bearerAuth: [] }] } },
+    '/tracker/projects': { post: { tags: ['tracker'], summary: 'Create a project (seed=audit|blank)', security: [{ bearerAuth: [] }] } },
+    '/tracker/workspaces': { post: { tags: ['tracker'], summary: 'Create a workspace you can drag features into', security: [{ bearerAuth: [] }] } },
+    '/tracker/workspaces/{id}/cards': { get: { tags: ['tracker'], summary: 'Board: stages + cards for a workspace', security: [{ bearerAuth: [] }] } },
+    '/tracker/features': { get: { tags: ['tracker'], summary: 'List/filter features (q, section, status, priority, source_status)', security: [{ bearerAuth: [] }] } },
+    '/tracker/features/bulk': { post: { tags: ['tracker'], summary: 'Bulk edit / place / delete many features (multi-select)', security: [{ bearerAuth: [] }] } },
+    '/tracker/placements': { post: { tags: ['tracker'], summary: 'Drag & drop: add features to a workspace stage', security: [{ bearerAuth: [] }] } },
+    '/tracker/placements/move': { post: { tags: ['tracker'], summary: 'Drag & drop: reorder/move cards across stages and boards', security: [{ bearerAuth: [] }] } },
+    '/tracker/plan': { post: { tags: ['tracker'], summary: 'Rule-based auto-plan (preview or add)', security: [{ bearerAuth: [] }] } },
+    '/tracker/import': { post: { tags: ['tracker'], summary: 'Import features from the feature document (merge/replace)', security: [{ bearerAuth: [] }] } },
+    '/tracker/stats': { get: { tags: ['tracker'], summary: 'Sections, workspaces, priorities, 14-day momentum', security: [{ bearerAuth: [] }] } },
+    '/tracker/events': { get: { tags: ['tracker'], summary: 'Server-Sent Events: live board changes + presence', security: [{ bearerAuth: [] }] } },
+    '/tracker/export': { get: { tags: ['tracker'], summary: 'Export features as JSON or CSV', security: [{ bearerAuth: [] }] } },
   },
 };
 route('GET', '/api/openapi.json', (ctx) => ctx.send(200, OPENAPI));
@@ -1075,6 +1096,28 @@ route('GET', '/api/docs', (ctx) => {
   <body><header><h1>NearBuyGoods API</h1><p>Base <code style="background:rgba(255,255,255,.15)">${'/api/v1'}</code> · v${VERSION} · <a style="color:#ffd9b8" href="/api/openapi.json">openapi.json</a> · Bearer JWT 🔐</p></header><main>${rows}</main></body></html>`);
 });
 route('GET', '/api/health', (ctx) => ctx.send(200, { ok: true, version: VERSION, uptime_s: Math.round(process.uptime()) }));
+
+/* ------------------------------------------------- project tracker ---- */
+/* The tracker (docs/TRACKER.md) shares this server and its /api surface.
+ * It is lazily initialised — first /api/tracker/* request creates the tables
+ * and seeds the demo project — so cold starts on other routes stay cheap. */
+let tracker = null;
+let trackerInit = null;
+async function ensureTracker() {
+  if (tracker) return tracker;
+  if (!trackerInit) {
+    trackerInit = (async () => {
+      const store = await openStore();
+      const t = createTracker({ store, secret: process.env.NBG_TRACKER_SECRET || SECRET, demoMode: DEMO_MODE, version: VERSION });
+      for (const r of trackerRoutes(t)) route(r.method, r.pattern, r.handler, r.opts);
+      await t.store.batch(() => t.seed({ withDemoPlan: true }));
+      console.log(`[tracker] ready — database: ${store.label}`);
+      return t;
+    })().catch((e) => { trackerInit = null; throw e; });
+  }
+  tracker = await trackerInit;
+  return tracker;
+}
 
 /* ------------------------------------------------------------- server ---- */
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webmanifest': 'application/manifest+json', '.ico': 'image/x-icon', '.woff2': 'font/woff2' };
@@ -1097,12 +1140,13 @@ export async function handler(req, res) {
   const isApi = p.startsWith('/api');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
   if (isApi) {
    try {
+    if (p.startsWith('/api/tracker')) await ensureTracker();
     let body = {};
     let raw = '';
     if (['POST', 'PUT', 'DELETE'].includes(req.method)) {
@@ -1133,7 +1177,7 @@ export async function handler(req, res) {
       const ctx = {
         req, res, body, params, user, raw,
         query: Object.fromEntries(url.searchParams),
-        send: (code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(code === 204 ? undefined : JSON.stringify(obj)); saveDb(); },
+        send: (code, obj) => { res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(code === 204 ? undefined : JSON.stringify(obj)); if (!ctx.skipSave) saveDb(); },
         sendDoc: (html) => { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(html); },
       };
       try { await r.handler(ctx); } catch (e) {
@@ -1157,6 +1201,8 @@ export async function handler(req, res) {
   }
 
   // static files
+  if (p === '/tracker' || p === '/tracker/' ) p = '/tracker.html';       // project tracker (docs/TRACKER.md)
+  else if (p.startsWith('/tracker/')) p = '/tracker.html';               // deep links: #/w/<id> handled client-side
   let file = p === '/' ? '/index.html' : p;
   file = path.normalize(file).replace(/^(\.\.[/\\])+/, '');
   const full = path.join(PUBLIC_DIR, file);
@@ -1187,6 +1233,7 @@ function csp() {
 if (!onVercel) {
   const server = http.createServer(handler);
   initStorage().then(() => {
+    ensureTracker().catch((e) => console.error('[tracker] init failed:', e.message));
     server.listen(PORT, '0.0.0.0', () => {
       console.log(`NearBuyGoods API + PWA listening on http://0.0.0.0:${PORT} (v${VERSION})`);
     });

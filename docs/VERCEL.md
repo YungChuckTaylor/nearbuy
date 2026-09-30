@@ -31,6 +31,30 @@ the repo now includes a tiny adapter (you don't touch it, it just works):
 
 Everything local stays exactly as before: `node server.js` → localhost:3000.
 
+## The project tracker needs a database too (2 minutes)
+
+`/tracker` (see [`docs/TRACKER.md`](TRACKER.md)) stores its rows in the best
+store you have attached — it auto-detects, in this order:
+
+1. **Neon Postgres** — `DATABASE_URL` (Vercel dashboard → **Storage** or
+   **Marketplace** → *Neon* → Connect). This is the recommended one: real SQL
+   tables (`nb_trk_features`, `nb_trk_placements`, …) created and indexed on the
+   first request. It talks to Neon over HTTP, so it works on serverless
+   functions with no connection pool.
+2. **Vercel KV / Upstash Redis** — `KV_REST_API_URL` + `KV_REST_API_TOKEN`
+   (the same store the main app already uses); the tracker keeps its own key,
+   `nbg:tracker:v1`, so the two never fight over one blob.
+3. **Nothing attached** — the tracker still runs, but on Vercel the data is
+   **ephemeral** (resets on cold starts). The UI shows a ⚠️ in the topbar and on
+   *Team & data*.
+
+After connecting, **Redeploy** and open `/tracker` → *Team & data*, or check:
+
+```
+https://<your-app>.vercel.app/api/tracker/health
+→ {"ok":true,"database":{"mode":"neon",…},"counts":{…}}
+```
+
 ---
 
 ## Step 1 — put the code on GitHub (≈4 min)

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#141a2e">
+  <meta name="description" content="NearBuyGoods project tracker — plan the MVP by dragging features into workspaces.">
+  <title>NearBuyGoods · Project Tracker</title>
+  <link rel="icon" href="/assets/icon-192.png">
+  <link rel="stylesheet" href="/css/tracker.css">
+</head>
+<body class="trk">
+  <!-- boot screen / sign-in gate ------------------------------------------- -->
+  <div id="gate" class="gate" hidden>
+    <div class="gate-card">
+      <div class="gate-brand"><span class="gate-mark">NB</span>
+        <div><h1>NearBuyGoods</h1><p class="muted">Project tracker</p></div>
+      </div>
+      <div id="gate-body"></div>
+    </div>
+  </div>
+
+  <!-- main shell ----------------------------------------------------------- -->
+  <div id="shell" class="shell" hidden>
+    <header class="topbar">
+      <button class="icon-btn only-mobile" id="menu-btn" aria-label="Menu" data-icon="menu"></button>
+      <a class="brand" href="/tracker" aria-label="Tracker home"><span class="brand-mark">NB</span><span class="brand-text">Tracker</span></a>
+      <div class="project-picker" id="project-picker"></div>
+      <button class="searchbtn" id="search-btn" aria-label="Search features">
+        <span data-icon="search"></span><span class="searchbtn-label">Search features…</span><kbd>⌘K</kbd>
+      </button>
+      <span class="spacer"></span>
+      <span class="dbchip" id="dbchip" title="Where your data lives"></span>
+      <div class="presence" id="presence" aria-live="polite"></div>
+      <button class="btn primary sm" id="new-workspace-btn"><span data-icon="plus"></span>New workspace</button>
+      <button class="icon-btn" id="help-btn" aria-label="Keyboard shortcuts" data-icon="help"></button>
+      <button class="avatar-btn" id="account-btn" aria-label="Account"></button>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+      <nav class="nav" id="nav"></nav>
+      <div class="side-sec">
+        <div class="side-head"><span>Workspaces</span><button class="icon-btn tiny" id="new-workspace-btn-2" aria-label="New workspace" data-icon="plus"></button></div>
+        <div class="ws-list" id="ws-list"></div>
+        <div class="drop-hint" id="ws-drop-hint">Drop features here to add them to a workspace</div>
+      </div>
+      <div class="side-foot" id="side-foot"></div>
+    </aside>
+
+    <main class="main" id="main" tabindex="-1"></main>
+  </div>
+
+  <div id="layer" class="layer"></div>   <!-- modals, sheets, drag ghost -->
+  <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+
+  <script type="module" src="/js/tracker/app.js"></script>
+</body>
+</html>

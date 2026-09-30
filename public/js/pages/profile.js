@@ -122,6 +122,7 @@ export function renderProfile(nav) {
       state.user?.role === 'store_owner' || state.user?.role === 'admin' ? row('store', 'Business dashboard', () => nav('#/business'), 'orange') : null,
       state.user?.role === 'admin' ? row('shield', 'Admin & moderation', () => nav('#/admin'), 'teal') : null,
       row('wallet', 'Premium & payments (Paystack)', () => nav('#/premium'), 'orange'),
+      row('box', 'Project tracker — plan the MVP', () => { if (window.NBGBridge) location.href = ((window.NBG_CONFIG || {}).API_BASE || '') + '/tracker'; else window.open('/tracker', '_blank'); }, 'teal'),
       row('box', 'My data (GDPR export)', async () => {
         const data = { user: state.user, saved: logged ? await api.get('/saved').catch(() => ({})) : {}, reservations: logged ? await api.get('/reservations').catch(() => ({})) : {} };
         const json = JSON.stringify(data, null, 2);

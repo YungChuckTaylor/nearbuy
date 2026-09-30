@@ -1,7 +1,7 @@
 /* NearBuyGoods service worker: app-shell precache, runtime caching, Web Push display.
    API calls stay network-first so prices/stock are never stale offline;
    failed GETs fall back to the last cached payload (handled in api.js). */
-const VERSION = 'nbg-v1.1.4';
+const VERSION = 'nbg-v1.1.5';
 const SHELL = [
   '/', '/index.html', '/manifest.webmanifest',
   '/css/app.css',
@@ -10,6 +10,10 @@ const SHELL = [
   '/js/pages/product.js', '/js/pages/storepage.js', '/js/pages/saved.js', '/js/pages/alerts.js', '/js/pages/profile.js',
   '/js/pages/business.js', '/js/pages/admin.js', '/js/pages/premium.js',
   '/assets/icon-192.png', '/assets/icon-512.png', '/assets/icon-180.png', '/assets/logo.jpg',
+  // project tracker (docs/TRACKER.md)
+  '/tracker', '/css/tracker.css',
+  '/js/tracker/app.js', '/js/tracker/api.js', '/js/tracker/ui.js', '/js/tracker/dnd.js', '/js/tracker/state.js', '/js/tracker/components.js',
+  '/js/tracker/views/overview.js', '/js/tracker/views/backlog.js', '/js/tracker/views/board.js', '/js/tracker/views/activity.js', '/js/tracker/views/team.js',
 ];
 
 self.addEventListener('install', (e) => {
