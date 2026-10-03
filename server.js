@@ -17,6 +17,10 @@ import * as paystack from './lib/paystack.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = path.join(__dirname, 'public');
+/* Marketing site (website/) is served from the same origin at /website, so the
+ * landing page works identically under `node server.js` and on Vercel. */
+const SITE_DIR = path.join(__dirname, 'website');
+const ANDROID_DIR = path.join(__dirname, 'android');
 const DATA_FILE = path.join(__dirname, 'data', 'db.json');
 const PORT = Number(process.env.PORT || 3000);
 const SECRET = process.env.NBG_SECRET || 'nbg-dev-secret-change-in-prod';
@@ -1077,7 +1081,32 @@ route('GET', '/api/docs', (ctx) => {
 route('GET', '/api/health', (ctx) => ctx.send(200, { ok: true, version: VERSION, uptime_s: Math.round(process.uptime()) }));
 
 /* ------------------------------------------------------------- server ---- */
-const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webmanifest': 'application/manifest+json', '.ico': 'image/x-icon', '.woff2': 'font/woff2' };
+const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webmanifest': 'application/manifest+json', '.ico': 'image/x-icon', '.woff2': 'font/woff2', '.apk': 'application/vnd.android.package-archive', '.txt': 'text/plain; charset=utf-8', '.webp': 'image/webp' };
+
+/* Newest signed Android build in android/ — published to the site so the
+ * landing page's download button always points at a real file. */
+let apkCache = null;
+function latestApk() {
+  if (apkCache && fs.existsSync(apkCache)) return apkCache;
+  try {
+    const files = fs.readdirSync(ANDROID_DIR).filter((f) => f.endsWith('.apk')).sort();
+    apkCache = files.length ? path.join(ANDROID_DIR, files[files.length - 1]) : null;
+  } catch { apkCache = null; }
+  return apkCache;
+}
+
+/* CSP for the landing pages: same strict policy as the PWA, plus a SHA-256 hash
+ * for each inline <script> (the JSON-LD block) so no 'unsafe-inline' is needed. */
+function siteCsp(html) {
+  const hashes = [];
+  const rx = /<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
+  let m;
+  while ((m = rx.exec(html))) {
+    if (!m[1].trim()) continue;
+    hashes.push(`'sha256-${crypto.createHash('sha256').update(m[1], 'utf8').digest('base64')}'`);
+  }
+  return "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' " + hashes.join(' ') + "; connect-src 'self'; manifest-src 'self'; media-src 'self' blob:; font-src 'self'; base-uri 'self'; form-action 'self'";
+}
 
 export async function handler(req, res) {
   await initStorage();
@@ -1156,13 +1185,23 @@ export async function handler(req, res) {
    }
   }
 
-  // static files
+  // static files — PWA at /, marketing site at /website
   let file = p === '/' ? '/index.html' : p;
   file = path.normalize(file).replace(/^(\.\.[/\\])+/, '');
-  const full = path.join(PUBLIC_DIR, file);
-  if (!full.startsWith(PUBLIC_DIR)) { res.writeHead(403); res.end(); return; }
+  const isSite = file === '/website' || file.startsWith('/website/');
+  let rel = isSite ? file.slice('/website'.length) : file;
+  if (isSite && (rel === '' || rel === '/')) rel = '/index.html';
+  const apk = isSite && rel === '/download/nearbuygoods.apk' ? latestApk() : null;
+  const full = apk || path.join(isSite ? SITE_DIR : PUBLIC_DIR, rel);
+  const allowed = full.startsWith(PUBLIC_DIR) || full.startsWith(SITE_DIR) || full.startsWith(ANDROID_DIR);
+  if (!allowed) { res.writeHead(403); res.end(); return; }
   fs.readFile(full, (err, data) => {
     if (err) {
+      if (isSite) { // marketing site: a real 404 instead of the app shell
+        res.writeHead(404, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
+        res.end('<!doctype html><meta charset="utf-8"><title>Not found — NearBuyGoods</title><body style="font:16px system-ui;padding:48px;color:#1d2433"><h1 style="color:#232c5c">Page not found</h1><p>That page isn\'t here. <a href="/website/">Back to the landing page</a> or <a href="/">open the app</a>.</p></body>');
+        return;
+      }
       // SPA fallback
       fs.readFile(path.join(PUBLIC_DIR, 'index.html'), (e2, html) => {
         if (e2) { res.writeHead(404); res.end('not found'); return; }
@@ -1174,7 +1213,8 @@ export async function handler(req, res) {
     const ext = path.extname(full).toLowerCase();
     const cache = ext === '.html' || file === '/sw.js' ? 'no-cache' : 'public, max-age=86400';
     const headers = { 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': cache };
-    if (ext === '.html') headers['Content-Security-Policy'] = csp();
+    if (ext === '.html') headers['Content-Security-Policy'] = isSite ? siteCsp(data.toString('utf8')) : csp();
+    if (ext === '.apk') headers['Content-Disposition'] = `attachment; filename="${path.basename(full)}"`;
     res.writeHead(200, headers);
     res.end(data);
   });

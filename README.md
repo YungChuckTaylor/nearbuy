@@ -79,7 +79,34 @@ Play checklist and the FCM push roadmap: [`docs/ANDROID.md`](docs/ANDROID.md).
 Capacitor remains the alternative path for plugin-heavy native builds and iOS
 (`docs/ARCHITECTURE.md` §3).
 
+## Landing page (`/website`)
+
+`website/` is a zero-dependency marketing site for the mobile apps — hero with
+live phone mockups, feature grid, benefits, screen-by-screen slider, counters,
+reviews, pricing, FAQ and an Android download button. It reuses the app's design
+tokens (navy/orange/teal, same radii and shadows) so site, PWA and Android shell
+look like one product, and it is served by the same deployment:
+
+```
+https://<your-deployment>/website     ← landing page (website/)
+https://<your-deployment>/            ← the app (public/)
+```
+
+```bash
+node server.js        # → http://localhost:3000/website
+node website/tools/make-site-assets.mjs   # regenerate favicons + social card
+```
+
+Details: [`website/README.md`](website/README.md),
+[`docs/WEBSITE.md`](docs/WEBSITE.md) (routing, CSP hashes, deployment checks).
+
 ## Changelog
+
+**v1.1-web — landing page (`website/`)**
+- `website/`: hand-written HTML/CSS/JS marketing site (no build step, no CDN, no webfonts) with Appzen-style layout and animation: preloader, scroll progress, sticky header + drawer, scroll-reveal, count-up stats, marquee, feature grid, alternating benefits, screen slider, testimonial slider, steps, pricing, FAQ accordion, download CTA, back-to-top and a reduce-motion toggle that honours the app's preference key.
+- Served at `/website` by the existing handler (works locally and on Vercel): `server.js` maps the folder, publishes the newest `android/*.apk` at `/website/download/nearbuygoods.apk`, returns real 404s for the site, and sends a per-response CSP whose `script-src` carries the SHA-256 hash of the inline JSON-LD (no `unsafe-inline`).
+- Brand assets generated from the same drawing code as the PWA icons (`tools/make-icons.js` refactored to export `encodePNG`/`paintMark`/`draw`; `website/tools/make-site-assets.mjs` emits favicons, touch icon and a 1200×630 social card). Existing icons verified byte-identical after the refactor.
+- Docs: `website/README.md`, `docs/WEBSITE.md`.
 
 **v1.1-cloud — Vercel full-stack deploy**
 - `api/handler.js` + `vercel.json`: the same `server.js` handler runs as a Vercel serverless function; `public/` served statically beside it.
