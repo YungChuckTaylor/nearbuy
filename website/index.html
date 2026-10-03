@@ -123,7 +123,7 @@
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M5.4 2.9 19.6 12 5.4 21.1Z" fill="currentColor" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></symbol>
 </svg>
 
-<a class="skip" href="#main">Skip to content</a>
+<a class="skip" href="#main" data-i18n="nav.skip">Skip to content</a>
 
 <!-- ============================================================ preloader -->
 <div id="preload" role="status" aria-live="polite">
@@ -139,21 +139,91 @@
 <!-- =============================================================== header -->
 <header class="top" id="top">
   <div class="wrap">
-    <a class="brand" href="#top" aria-label="NearBuyGoods — home">
-      <svg class="mark" viewBox="0 0 512 512"><use href="#mark"/></svg>
-      <span class="bar" aria-hidden="true"></span>
-      <span class="word"><b>nearbuy</b><i>goods</i></span>
+    <a class="brand" href="#top" aria-label="NearBuyGoods — home" data-i18n-aria="nav.homeAria">
+      <img src="/website/assets/img/nearbuy-logo.png" alt="NearBuyGoods" class="brand-logo" width="130" height="38">
     </a>
     <nav class="nav" aria-label="Sections">
-      <a href="#about">About</a>
-      <a href="#features">Features</a>
-      <a href="#how">How it works</a>
-      <a href="#screens">Screens</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#faq">FAQ</a>
+      <a href="#about" data-i18n="nav.about">About</a>
+      <a href="#features" data-i18n="nav.features">Features</a>
+      <a href="#how" data-i18n="nav.how">How it works</a>
+      <a href="#screens" data-i18n="nav.screens">Screens</a>
+      <a href="#pricing" data-i18n="nav.pricing">Pricing</a>
+      <a href="#faq" data-i18n="nav.faq">FAQ</a>
     </nav>
     <div class="hdr-cta">
-      <a class="btn primary sm" href="#download">Download</a>
+      <!-- Country / Language / Currency Switcher -->
+      <div class="intl-picker" id="intl-picker">
+        <button class="intl-btn" id="intl-btn" type="button" aria-expanded="false" aria-haspopup="dialog" aria-label="Choose country, language, currency">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-globe"/></svg>
+          <span class="intl-current-flag" id="intl-current-flag">🇺🇸</span>
+          <span class="intl-label" id="intl-current-label">EN · USD ($)</span>
+          <svg class="ic xs chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><use href="#i-chev-d"/></svg>
+        </button>
+
+        <div class="intl-dropdown" id="intl-dropdown" role="dialog" aria-label="Localization preferences" hidden>
+          <div class="intl-head">
+            <span class="intl-title" data-i18n="intl.title">Regional Settings</span>
+            <button class="intl-close" id="intl-close" type="button" aria-label="Close dialog" data-i18n-aria="intl.close">&times;</button>
+          </div>
+
+          <div class="intl-section">
+            <label class="intl-sec-label" for="intl-country-select" data-i18n="intl.country">Country / Region</label>
+            <div class="intl-select-wrap">
+              <select id="intl-country-select" class="intl-select">
+                <option value="US" data-lang="en" data-curr="USD">🇺🇸 United States (USD $)</option>
+                <option value="GB" data-lang="en" data-curr="GBP">🇬🇧 United Kingdom (GBP £)</option>
+                <option value="CA" data-lang="en" data-curr="CAD">🇨🇦 Canada (CAD CA$)</option>
+                <option value="FR" data-lang="fr" data-curr="EUR">🇫🇷 France (EUR €)</option>
+                <option value="DE" data-lang="de" data-curr="EUR">🇩🇪 Deutschland (EUR €)</option>
+                <option value="ES" data-lang="es" data-curr="EUR">🇪🇸 España (EUR €)</option>
+                <option value="CN" data-lang="zh" data-curr="USD">🇨🇳 中国 (Mandarin / USD $)</option>
+                <option value="NG" data-lang="en" data-curr="USD">🇳🇬 Nigeria (USD $)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="intl-section">
+            <span class="intl-sec-label" data-i18n="intl.language">Language</span>
+            <div class="intl-grid intl-lang-grid" role="radiogroup" aria-label="Language">
+              <button type="button" class="intl-pill active" data-lang-opt="en" aria-checked="true">
+                <span class="pill-flag">🇺🇸</span> English <span class="pill-badge" data-i18n="intl.defaultBadge">Default</span>
+              </button>
+              <button type="button" class="intl-pill" data-lang-opt="fr" aria-checked="false">
+                <span class="pill-flag">🇫🇷</span> Français
+              </button>
+              <button type="button" class="intl-pill" data-lang-opt="es" aria-checked="false">
+                <span class="pill-flag">🇪🇸</span> Español
+              </button>
+              <button type="button" class="intl-pill" data-lang-opt="de" aria-checked="false">
+                <span class="pill-flag">🇩🇪</span> Deutsch
+              </button>
+              <button type="button" class="intl-pill" data-lang-opt="zh" aria-checked="false">
+                <span class="pill-flag">🇨🇳</span> 中文 (Mandarin)
+              </button>
+            </div>
+          </div>
+
+          <div class="intl-section">
+            <span class="intl-sec-label" data-i18n="intl.currency">Currency</span>
+            <div class="intl-grid intl-curr-grid" role="radiogroup" aria-label="Currency">
+              <button type="button" class="intl-pill active" data-curr-opt="USD" aria-checked="true">
+                <b>USD</b> <span class="curr-sym">($)</span>
+              </button>
+              <button type="button" class="intl-pill" data-curr-opt="EUR" aria-checked="false">
+                <b>EUR</b> <span class="curr-sym">(€)</span>
+              </button>
+              <button type="button" class="intl-pill" data-curr-opt="CAD" aria-checked="false">
+                <b>CAD</b> <span class="curr-sym">(CA$)</span>
+              </button>
+              <button type="button" class="intl-pill" data-curr-opt="GBP" aria-checked="false">
+                <b>GBP</b> <span class="curr-sym">(£)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <a class="btn primary sm" href="#download" data-i18n="nav.download">Download</a>
       <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="drawer">
         <svg class="i1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-menu"/></svg>
         <svg class="i2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-x"/></svg>
@@ -163,14 +233,35 @@
 </header>
 <div class="drawer" id="drawer">
   <div class="wrap">
-    <a href="#about">About <svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-arrow-r"/></svg></a>
-    <a href="#features">Features <svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-arrow-r"/></svg></a>
-    <a href="#how">How it works <svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-arrow-r"/></svg></a>
-    <a href="#screens">Screens <svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-arrow-r"/></svg></a>
-    <a href="#reviews">Reviews <svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-arrow-r"/></svg></a>
-    <a href="#pricing">Pricing <svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-arrow-r"/></svg></a>
-    <a href="#faq">FAQ <svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-arrow-r"/></svg></a>
-    <a class="btn primary" href="#download"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-download"/></svg> Download the app</a>
+    <div class="drawer-intl">
+      <div class="drawer-intl-row">
+        <label for="drawer-lang-select"><svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-globe"/></svg> <span data-i18n="intl.language">Language</span>:</label>
+        <select id="drawer-lang-select" class="drawer-select">
+          <option value="en">🇺🇸 English</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="de">🇩🇪 Deutsch</option>
+          <option value="zh">🇨🇳 中文 (Mandarin)</option>
+        </select>
+      </div>
+      <div class="drawer-intl-row">
+        <label for="drawer-curr-select"><svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><use href="#i-wallet"/></svg> <span data-i18n="intl.currency">Currency</span>:</label>
+        <select id="drawer-curr-select" class="drawer-select">
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="CAD">CAD (CA$)</option>
+          <option value="GBP">GBP (£)</option>
+        </select>
+      </div>
+    </div>
+    <a href="#about"><span data-i18n="nav.about">About</span> <svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-arrow-r"/></svg></a>
+    <a href="#features"><span data-i18n="nav.features">Features</span> <svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-arrow-r"/></svg></a>
+    <a href="#how"><span data-i18n="nav.how">How it works</span> <svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-arrow-r"/></svg></a>
+    <a href="#screens"><span data-i18n="nav.screens">Screens</span> <svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-arrow-r"/></svg></a>
+    <a href="#reviews"><span data-i18n="nav.reviews">Reviews</span> <svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-arrow-r"/></svg></a>
+    <a href="#pricing"><span data-i18n="nav.pricing">Pricing</span> <svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-arrow-r"/></svg></a>
+    <a href="#faq"><span data-i18n="nav.faq">FAQ</span> <svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-arrow-r"/></svg></a>
+    <a class="btn primary" href="#download"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-download"/></svg> <span data-i18n="nav.downloadApp">Download the app</span></a>
   </div>
 </div>
 
@@ -186,21 +277,21 @@
   <div class="wrap">
     <div class="hero-grid">
       <div class="hero-copy">
-        <span class="eyebrow reveal"><span class="dot"></span> Snap · Search · Save</span>
-        <h1 class="display h1 reveal" id="hero-title" style="--d:80ms">Upload any item. Find it at stores <em>near you</em>. Instantly.</h1>
-        <p class="lead reveal" style="--d:160ms">Snap a photo, scan a barcode, speak it or paste a link — NearBuyGoods works out what the item is, then shows the shops around you that have it in stock, what they charge, how far they are and whether you can reserve it for pickup.</p>
+        <span class="eyebrow reveal"><span class="dot"></span> <span data-i18n="hero.eyebrow">Snap · Search · Save</span></span>
+        <h1 class="display h1 reveal" id="hero-title" style="--d:80ms" data-i18n-html="hero.title">Upload any item. Find it at stores <em>near you</em>. Instantly.</h1>
+        <p class="lead reveal" style="--d:160ms" data-i18n="hero.lead">Snap a photo, scan a barcode, speak it or paste a link — NearBuyGoods works out what the item is, then shows the shops around you that have it in stock, what they charge, how far they are and whether you can reserve it for pickup.</p>
 
         <div class="hero-actions reveal" style="--d:240ms">
           <div class="stores">
             <a class="storebtn light soon" href="#">
               <svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-apple"/></svg>
-              <span class="st"><small>Download on the</small><b>App&nbsp;Store</b></span>
-              <span class="tag">Soon</span>
+              <span class="st"><small data-i18n="hero.appStoreSmall">Download on the</small><b data-i18n="hero.appStoreBold">App&nbsp;Store</b></span>
+              <span class="tag" data-i18n="hero.soon">Soon</span>
             </a>
             <a class="storebtn soon" href="#" data-store="play">
               <svg viewBox="0 0 24 24" fill="none"><use href="#i-play"/></svg>
-              <span class="st"><small>Get it on</small><b>Google&nbsp;Play</b></span>
-              <span class="tag">Soon</span>
+              <span class="st"><small data-i18n="hero.googlePlaySmall">Get it on</small><b data-i18n="hero.googlePlayBold">Google&nbsp;Play</b></span>
+              <span class="tag" data-i18n="hero.soon">Soon</span>
             </a>
           </div>
         </div>
@@ -214,9 +305,9 @@
         </p>
 
         <div class="hero-stats reveal" style="--d:360ms">
-          <div class="st"><b><span data-count="33">33</span></b><span>API endpoints</span></div>
-          <div class="st"><b><span data-count="74">74</span></b><span>Offers tracked</span></div>
-          <div class="st"><b><span data-count="4">4</span></b><span>Ways to identify</span></div>
+          <div class="st"><b><span data-count="33">33</span></b><span data-i18n="hero.statEndpoints">API endpoints</span></div>
+          <div class="st"><b><span data-count="74">74</span></b><span data-i18n="hero.statOffers">Offers tracked</span></div>
+          <div class="st"><b><span data-count="4">4</span></b><span data-i18n="hero.statWays">Ways to identify</span></div>
         </div>
 
         <div class="hero-avatars reveal" style="--d:420ms">
@@ -226,7 +317,7 @@
             <span class="av" style="background:#2fbcc7">CE</span>
             <span class="av" style="background:#7c6bc8">AO</span>
           </span>
-          <span class="who"><span class="stars">★★★★</span> <b>4.3</b> average of the 10 reviews in the bundled demo market</span>
+          <span class="who"><span class="stars">★★★★</span> <b>4.3</b> <span data-i18n="hero.reviewsNote">average of the 10 reviews in the bundled demo market</span></span>
         </div>
       </div>
 
@@ -245,35 +336,35 @@
               <span class="bell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-bell"/></svg><b></b></span>
             </div>
             <div class="a-body">
-              <div class="a-hi"><b>Hey there 👋</b><span>Stores within 10 km of Lagos, NG</span></div>
+              <div class="a-hi"><b data-i18n="mockup.hey">Hey there 👋</b><span data-i18n="mockup.storesWithinLagos">Stores within 10 km of Lagos, NG</span></div>
               <div class="a-search">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-search"/></svg>
-                <span>Search items, brands, stores…</span>
+                <span data-i18n="mockup.searchPlaceholder">Search items, brands, stores…</span>
                 <span class="cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-camera"/></svg></span>
               </div>
               <div class="a-cta">
                 <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-camera"/></svg></span>
-                <span><b>Snap it. Find it nearby.</b><span>Photo · barcode · voice · URL — AI identifies it and matches local stock.</span></span>
+                <span><b data-i18n="mockup.snapNearby">Snap it. Find it nearby.</b><span data-i18n="mockup.snapDesc">Photo · barcode · voice · URL — AI identifies it and matches local stock.</span></span>
               </div>
-              <div class="a-sec"><b>Categories</b></div>
+              <div class="a-sec"><b data-i18n="mockup.categories">Categories</b></div>
               <div class="a-cats">
-                <span class="a-cat"><i>🔌</i><span>Electronics</span></span>
-                <span class="a-cat"><i>👗</i><span>Fashion</span></span>
-                <span class="a-cat"><i>🧺</i><span>Groceries</span></span>
-                <span class="a-cat"><i>🛋️</i><span>Home</span></span>
+                <span class="a-cat"><i>🔌</i><span data-i18n="mockup.catElectronics">Electronics</span></span>
+                <span class="a-cat"><i>👗</i><span data-i18n="mockup.catFashion">Fashion</span></span>
+                <span class="a-cat"><i>🧺</i><span data-i18n="mockup.catGroceries">Groceries</span></span>
+                <span class="a-cat"><i>🛋️</i><span data-i18n="mockup.catHome">Home</span></span>
               </div>
-              <div class="a-sec"><b>Deals near you</b><span>See all</span></div>
-              <div class="a-deal"><span class="pct">-15%</span><b>Lekki Fashion Hub</b><span>Weekend fashion flash — sneakers &amp; bags · 4.2 km away</span></div>
-              <div class="a-sec"><b>Popular near you</b><span>Trending</span></div>
+              <div class="a-sec"><b data-i18n="mockup.dealsNearYou">Deals near you</b><span data-i18n="mockup.seeAll">See all</span></div>
+              <div class="a-deal"><span class="pct">-15%</span><b>Lekki Fashion Hub</b><span data-i18n="mockup.dealLekki">Weekend fashion flash — sneakers &amp; bags · 4.2 km away</span></div>
+              <div class="a-sec"><b data-i18n="mockup.popularNearYou">Popular near you</b><span data-i18n="mockup.trending">Trending</span></div>
               <div class="a-offer">
                 <span class="em">🎧</span>
-                <span class="tx"><b>Wireless Earbuds Pro ANC</b><span>TechHub Point · 1.2 km</span></span>
-                <span class="pr"><b>₦28,500</b><span class="ok">In stock</span></span>
+                <span class="tx"><b data-i18n="mockup.earbuds">Wireless Earbuds Pro ANC</b><span data-i18n="mockup.earbudsSub">TechHub Point · 1.2 km</span></span>
+                <span class="pr"><b data-price-key="earbuds">$35.00</b><span class="ok" data-i18n="mockup.inStock">In stock</span></span>
               </div>
               <div class="a-offer">
                 <span class="em">🔌</span>
-                <span class="tx"><b>65W GaN Fast Charger</b><span>MegaMart Ikeja · 2.4 km</span></span>
-                <span class="pr"><b>₦11,200</b><span class="ok">In stock</span></span>
+                <span class="tx"><b data-i18n="mockup.charger">65W GaN Fast Charger</b><span data-i18n="mockup.chargerSub">MegaMart Ikeja · 2.4 km</span></span>
+                <span class="pr"><b data-price-key="charger">$14.00</b><span class="ok" data-i18n="mockup.inStock">In stock</span></span>
               </div>
             </div>
             <div class="a-nav">
@@ -288,17 +379,17 @@
 
         <div class="float alertcard" data-depth="22">
           <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-bell"/></svg></span>
-          <span><b>Price drop</b><span>Earbuds now ₦28,500 at TechHub Point</span></span>
+          <span><b data-i18n="hero.alertPriceDrop">Price drop</b><span data-i18n="hero.alertEarbuds">Earbuds now {earbuds} at TechHub Point</span></span>
         </div>
         <div class="float pricecard" data-depth="16">
-          <div class="row"><span class="big">₦28,500</span><span class="badge ok">Lowest</span></div>
-          <div class="dash">3 stores compared · 1.2 km away</div>
+          <div class="row"><span class="big" data-price-key="earbuds">$35.00</span><span class="badge ok" data-i18n="hero.badgeLowest">Lowest</span></div>
+          <div class="dash" data-i18n="hero.cardStoresComp">3 stores compared · 1.2 km away</div>
         </div>
         <div class="float camfab" data-depth="28" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-camera"/></svg>
         </div>
         <div class="float ratingchip" data-depth="12">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bolt"/></svg> 74 live offers nearby
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bolt"/></svg> <span data-i18n="hero.cardOffersLive">74 live offers nearby</span>
         </div>
       </div>
     </div>
@@ -309,28 +400,28 @@
 <div class="marquee" aria-label="What's inside the app">
   <div class="track">
     <div class="set">
-      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-camera"/></svg>Photo recognition</span>
-      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-barcode"/></svg>Barcode scan</span>
-      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-mic"/></svg>Voice search</span>
-      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-pin"/></svg>Geo-radius discovery</span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-camera"/></svg><span data-i18n="marquee.photo">Photo recognition</span></span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-barcode"/></svg><span data-i18n="marquee.barcode">Barcode scan</span></span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-mic"/></svg><span data-i18n="marquee.voice">Voice search</span></span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-pin"/></svg><span data-i18n="marquee.geo">Geo-radius discovery</span></span>
       <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-wallet"/></svg>Cross-store price compare</span>
-      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-chart"/></svg>Price history</span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-chart"/></svg><span data-i18n="marquee.history">Price history</span></span>
       <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-bookmark"/></svg>Reserve for pickup</span>
-      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-bell"/></svg>Price-drop alerts</span>
-      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-store"/></svg>Owner dashboard</span>
-      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-bolt"/></svg>Offline shell</span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-bell"/></svg><span data-i18n="marquee.alerts">Price-drop alerts</span></span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-store"/></svg><span data-i18n="marquee.dashboard">Owner dashboard</span></span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-bolt"/></svg><span data-i18n="marquee.offline">Offline shell</span></span>
     </div>
     <div class="set" aria-hidden="true">
-      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-camera"/></svg>Photo recognition</span>
-      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-barcode"/></svg>Barcode scan</span>
-      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-mic"/></svg>Voice search</span>
-      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-pin"/></svg>Geo-radius discovery</span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-camera"/></svg><span data-i18n="marquee.photo">Photo recognition</span></span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-barcode"/></svg><span data-i18n="marquee.barcode">Barcode scan</span></span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-mic"/></svg><span data-i18n="marquee.voice">Voice search</span></span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-pin"/></svg><span data-i18n="marquee.geo">Geo-radius discovery</span></span>
       <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-wallet"/></svg>Cross-store price compare</span>
-      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-chart"/></svg>Price history</span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-chart"/></svg><span data-i18n="marquee.history">Price history</span></span>
       <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-bookmark"/></svg>Reserve for pickup</span>
-      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-bell"/></svg>Price-drop alerts</span>
-      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-store"/></svg>Owner dashboard</span>
-      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-bolt"/></svg>Offline shell</span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-bell"/></svg><span data-i18n="marquee.alerts">Price-drop alerts</span></span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-store"/></svg><span data-i18n="marquee.dashboard">Owner dashboard</span></span>
+      <span class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-bolt"/></svg><span data-i18n="marquee.offline">Offline shell</span></span>
     </div>
   </div>
 </div>
@@ -350,21 +441,21 @@
               <span class="t">Wireless Earbuds Pro ANC</span>
             </div>
             <div class="a-body">
-              <div class="a-hero-em"><i>🎧</i><b>Wireless Earbuds Pro ANC</b><span>Soundcore · Electronics · 3 offers nearby</span></div>
+              <div class="a-hero-em"><i>🎧</i><b data-i18n="mockup.earbuds">Wireless Earbuds Pro ANC</b><span data-i18n="mockup.earbudsAboutSub">Soundcore · Electronics · 3 offers nearby</span></div>
               <div class="a-price best">
-                <span class="st"><b>TechHub Point</b><span>1.2 km · open · verified</span></span>
-                <span class="amt"><b>₦28,500</b><span>Lowest</span></span>
+                <span class="st"><b>TechHub Point</b><span data-i18n="mockup.techHubVerified">1.2 km · open · verified</span></span>
+                <span class="amt"><b data-price-key="earbuds">$35.00</b><span data-i18n="mockup.lowestBadge">Lowest</span></span>
               </div>
               <div class="a-price">
-                <span class="st"><b>MegaMart Ikeja City Mall</b><span>2.4 km · pickup today</span></span>
-                <span class="amt"><b>₦31,900</b><span style="color:var(--muted)">+₦3,400</span></span>
+                <span class="st"><b>MegaMart Ikeja City Mall</b><span data-i18n="mockup.megaMartPickup">2.4 km · pickup today</span></span>
+                <span class="amt"><b data-price-key="earbuds_old">$39.00</b><span style="color:var(--muted)" data-price-key="earbuds_diff">+$4.00</span></span>
               </div>
               <div class="a-price">
-                <span class="st"><b>SPAR Express Oniru</b><span>6.1 km · restocking</span></span>
-                <span class="amt"><b>₦33,000</b><span style="color:var(--orange-dark)">Out</span></span>
+                <span class="st"><b>SPAR Express Oniru</b><span data-i18n="mockup.sparRestock">6.1 km · restocking</span></span>
+                <span class="amt"><b data-price-key="spar">$41.00</b><span style="color:var(--orange-dark)" data-i18n="mockup.out">Out</span></span>
               </div>
               <div class="a-chart">
-                <div class="hd"><b>Price history · 8 weeks</b><span>₦28,500 now</span></div>
+                <div class="hd"><b data-i18n="mockup.priceHistory8w">Price history · 8 weeks</b><span data-i18n="mockup.priceNow">{earbuds} now</span></div>
                 <svg viewBox="0 0 220 60" preserveAspectRatio="none" aria-hidden="true">
                   <defs>
                     <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
@@ -378,8 +469,8 @@
                 </svg>
               </div>
               <div class="a-btnrow">
-                <span class="b p">Reserve for pickup</span>
-                <span class="b g">Save &amp; watch</span>
+                <span class="b p" data-i18n="mockup.reservePickup">Reserve for pickup</span>
+                <span class="b g" data-i18n="mockup.saveWatch">Save &amp; watch</span>
               </div>
             </div>
             <div class="a-nav">
@@ -392,46 +483,43 @@
           </div>
         </div>
         <div class="stackcard">
-          <div class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-spark"/></svg> Match confidence</div>
-          <div class="p">Barcode 0.95 · colour rarity · name tokens</div>
+          <div class="t"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-spark"/></svg> <span data-i18n="mockup.matchConf">Match confidence</span></div>
+          <div class="p" data-i18n="mockup.matchConfDesc">Barcode 0.95 · colour rarity · name tokens</div>
           <div class="prog"><i></i></div>
         </div>
       </div>
 
       <div class="about-copy">
-        <span class="eyebrow reveal">About the app</span>
-        <h2 class="display h2 reveal" id="about-title" style="--d:60ms">Two taps from a photo to the shelf it's sitting on.</h2>
-        <p class="reveal" style="--d:120ms">NearBuyGoods is an <b>API-first</b> storefront for what is actually on the shelves near you. One JSON service powers the iOS and Android apps — so the same search, prices and reservations are on every phone.</p>
+        <span class="eyebrow reveal" data-i18n="about.eyebrow">About the app</span>
+        <h2 class="display h2 reveal" id="about-title" style="--d:60ms" data-i18n="about.title">Two taps from a photo to the shelf it's sitting on.</h2>
+        <p class="reveal" style="--d:120ms" data-i18n-html="about.lead">NearBuyGoods is an <b>API-first</b> storefront for what is actually on the shelves near you. One JSON service powers the iOS and Android apps — so the same search, prices and reservations are on every phone.</p>
 
         <div class="mini-feats">
           <div class="minifeat reveal" style="--d:160ms">
             <span class="itile orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg></span>
             <div>
-              <div class="h4">Cutting-edge where it counts</div>
-              <p>Zero-dependency Node service, 33 documented REST endpoints, JWT auth, rate limits, geohash indexing, Web Push and a Paystack checkout flow.</p>
+              <div class="h4" data-i18n="about.feat1Title">Cutting-edge where it counts</div>
+              <p data-i18n="about.feat1Desc">Zero-dependency Node service, 33 documented REST endpoints, JWT auth, rate limits, geohash indexing, Web Push and a Paystack checkout flow.</p>
             </div>
           </div>
           <div class="minifeat reveal" style="--d:220ms">
             <span class="itile teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-store"/></svg></span>
             <div>
-              <div class="h4">A real market to play in</div>
-              <p>Every install ships with a fictional Lagos market — 8 stores, 28 products, 74 live offers, deals, reviews and a reservation queue — so you can try the whole loop without setting anything up.</p>
+              <div class="h4" data-i18n="about.feat2Title">A real market to play in</div>
+              <p data-i18n="about.feat2Desc">Every install ships with a fictional Lagos market — 8 stores, 28 products, 74 live offers, deals, reviews and a reservation queue — so you can try the whole loop without setting anything up.</p>
             </div>
           </div>
         </div>
 
         <ul class="checks">
-          <li class="reveal" style="--d:260ms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Guest mode for browsing — no account needed to search and compare.</li>
-          <li class="reveal" style="--d:300ms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Works offline — cached catalogue reads and a saved watchlist.</li>
-          <li class="reveal" style="--d:340ms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Built for 44&nbsp;px thumbs: bottom tab bar, centre camera button, bottom sheets.</li>
+          <li class="reveal" style="--d:260ms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="about.check1">Guest mode for browsing — no account needed to search and compare.</span></li>
+          <li class="reveal" style="--d:300ms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="about.check2">Works offline — cached catalogue reads and a saved watchlist.</span></li>
+          <li class="reveal" style="--d:340ms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="about.check3">Built for 44 px thumbs: bottom tab bar, centre camera button, bottom sheets.</span></li>
         </ul>
 
         <div class="btn-row reveal" style="--d:380ms">
-          <a class="btn navy" href="#features">
-            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg>
-            Explore the features
-          </a>
-          <a class="btn ghost" href="#how">See how it works</a>
+          <a class="btn navy" href="#features"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg> <span data-i18n="about.btnExplore">Explore the features</span></a>
+          <a class="btn ghost" href="#how" data-i18n="about.btnHow">See how it works</a>
         </div>
       </div>
     </div>
@@ -442,66 +530,66 @@
 <section class="sec tint" id="features" aria-labelledby="features-title">
   <div class="wrap">
     <div class="sechead">
-      <span class="eyebrow reveal"><span class="dot"></span> Key features</span>
-      <h2 class="display h2 reveal" id="features-title" style="--d:60ms">Everything you need to buy local, in one app</h2>
-      <p class="lead reveal" style="--d:120ms">Recognition, discovery, comparison, commerce and alerts — the loop closes inside the app instead of across five group chats.</p>
+      <span class="eyebrow reveal"><span class="dot"></span> <span data-i18n="features.eyebrow">Key features</span></span>
+      <h2 class="display h2 reveal" id="features-title" style="--d:60ms" data-i18n="features.title">Everything you need to buy local, in one app</h2>
+      <p class="lead reveal" style="--d:120ms" data-i18n="features.lead">Recognition, discovery, comparison, commerce and alerts — the loop closes inside the app instead of across five group chats.</p>
     </div>
 
     <div class="fgrid">
       <article class="fcard reveal" style="--d:0ms">
         <span class="itile orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-camera"/></svg></span>
-        <h3>Photo recognition</h3>
-        <p>Point the camera at anything. Dominant colours, barcode and filename signals are scored against the catalogue — you get ranked candidates with a confidence number and the evidence behind each match.</p>
-        <a class="link" href="#download">Try it in the app <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <h3 data-i18n="features.c1Title">Photo recognition</h3>
+        <p data-i18n="features.c1Desc">Point the camera at anything. Dominant colours, barcode and filename signals are scored against the catalogue — you get ranked candidates with a confidence number and the evidence behind each match.</p>
+        <a class="link" href="#download"><span data-i18n="features.c1Link">Try it in the app</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </article>
 
       <article class="fcard reveal" style="--d:70ms">
         <span class="itile teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-barcode"/></svg></span>
-        <h3>Barcode, voice, URL or text</h3>
-        <p>Four more ways in: scan a barcode with the phone's camera, say the product name, paste a shop link, or just type it. Every path lands on the same ranked results.</p>
-        <a class="link" href="#download">Search the demo market <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <h3 data-i18n="features.c2Title">Barcode, voice, URL or text</h3>
+        <p data-i18n="features.c2Desc">Four more ways in: scan a barcode with the phone's camera, say the product name, paste a shop link, or just type it. Every path lands on the same ranked results.</p>
+        <a class="link" href="#download"><span data-i18n="features.c2Link">Search the demo market</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </article>
 
       <article class="fcard reveal" style="--d:140ms">
         <span class="itile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-pin"/></svg></span>
-        <h3>Discovery inside your radius</h3>
-        <p>Haversine distance over precomputed coordinates, with open-now hours, price range, brand filters and a radius you set yourself — from 1&nbsp;km to whole-city.</p>
-        <a class="link" href="#download">Open discovery <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <h3 data-i18n="features.c3Title">Discovery inside your radius</h3>
+        <p data-i18n="features.c3Desc">Haversine distance over precomputed coordinates, with open-now hours, price range, brand filters and a radius you set yourself — from 1 km to whole-city.</p>
+        <a class="link" href="#download"><span data-i18n="features.c3Link">Open discovery</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </article>
 
       <article class="fcard reveal" style="--d:210ms">
         <span class="itile purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-wallet"/></svg></span>
-        <h3>Cross-store price comparison</h3>
-        <p>The same product, side by side across every nearby store: price, stock, condition, distance and the last time the shopkeeper updated it.</p>
-        <a class="link" href="#download">Compare a product <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <h3 data-i18n="features.c4Title">Cross-store price comparison</h3>
+        <p data-i18n="features.c4Desc">The same product, side by side across every nearby store: price, stock, condition, distance and the last time the shopkeeper updated it.</p>
+        <a class="link" href="#download"><span data-i18n="features.c4Link">Compare a product</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </article>
 
       <article class="fcard reveal" style="--d:0ms">
         <span class="itile teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chart"/></svg></span>
-        <h3>Price history &amp; trends</h3>
-        <p>Eight weeks of price history per offer, drawn as sparklines and history charts, so “is this a good price?” becomes a fact instead of a feeling.</p>
-        <a class="link" href="#download">See a price chart <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <h3 data-i18n="features.c5Title">Price history &amp; trends</h3>
+        <p data-i18n="features.c5Desc">Eight weeks of price history per offer, drawn as sparklines and history charts, so “is this a good price?” becomes a fact instead of a feeling.</p>
+        <a class="link" href="#download"><span data-i18n="features.c5Link">See a price chart</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </article>
 
       <article class="fcard reveal" style="--d:70ms">
         <span class="itile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bookmark"/></svg></span>
-        <h3>Reserve for pickup</h3>
-        <p>Hold stock at the counter with a quantity stepper and a pickup code. The owner sees the reservation in their queue and you get pinged the moment it's ready.</p>
-        <a class="link" href="#download">Make a reservation <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <h3 data-i18n="features.c6Title">Reserve for pickup</h3>
+        <p data-i18n="features.c6Desc">Hold stock at the counter with a quantity stepper and a pickup code. The owner sees the reservation in their queue and you get pinged the moment it's ready.</p>
+        <a class="link" href="#download"><span data-i18n="features.c6Link">Make a reservation</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </article>
 
       <article class="fcard reveal" style="--d:140ms">
         <span class="itile orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bell"/></svg></span>
-        <h3>Alerts that land</h3>
-        <p>Price drops, back-in-stock and reservation updates delivered over Web Push (VAPID + aes128gcm) — with the app closed. FCM/APNs is the roadmap for the native shells.</p>
-        <a class="link" href="#download">See the alert centre <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <h3 data-i18n="features.c7Title">Alerts that land</h3>
+        <p data-i18n="features.c7Desc">Price drops, back-in-stock and reservation updates delivered over Web Push (VAPID + aes128gcm) — with the app closed. FCM/APNs is the roadmap for the native shells.</p>
+        <a class="link" href="#download"><span data-i18n="features.c7Link">See the alert centre</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </article>
 
       <article class="fcard reveal" style="--d:210ms">
         <span class="itile purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-store"/></svg></span>
-        <h3>Dashboard for shop owners</h3>
-        <p>Inventory and price editing, deal posting, a live reservation queue and analytics that tie views to matches and clicks. Change a price and watchers are notified automatically.</p>
-        <a class="link" href="#download">Open the dashboard <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <h3 data-i18n="features.c8Title">Dashboard for shop owners</h3>
+        <p data-i18n="features.c8Desc">Inventory and price editing, deal posting, a live reservation queue and analytics that tie views to matches and clicks. Change a price and watchers are notified automatically.</p>
+        <a class="link" href="#download"><span data-i18n="features.c8Link">Open the dashboard</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </article>
     </div>
   </div>
@@ -512,16 +600,16 @@
   <span class="deco r" aria-hidden="true"></span>
   <div class="wrap">
     <div class="sechead">
-      <span class="eyebrow reveal"><span class="dot"></span> App benefits</span>
-      <h2 class="display h2 reveal" id="benefits-title" style="--d:60ms">Built around the walk to the shop</h2>
-      <p class="lead reveal" style="--d:120ms">The decisions that actually cost money happen before you leave the house: is it there, is it cheaper somewhere else, is it worth the trip.</p>
+      <span class="eyebrow reveal"><span class="dot"></span> <span data-i18n="benefits.eyebrow">App benefits</span></span>
+      <h2 class="display h2 reveal" id="benefits-title" style="--d:60ms" data-i18n="benefits.title">Built around the walk to the shop</h2>
+      <p class="lead reveal" style="--d:120ms" data-i18n="benefits.lead">The decisions that actually cost money happen before you leave the house: is it there, is it cheaper somewhere else, is it worth the trip.</p>
     </div>
 
     <div class="benefit">
       <div class="benefit-copy reveal left">
-        <span class="badge orange">Price intelligence</span>
-        <h3 class="display">Never overpay for the same thing twice</h3>
-        <p>Every offer for the item you're looking at, cheapest first, with the distance you'd travel to get it and the stock it's actually sitting in.</p>
+        <span class="badge orange" data-i18n="benefits.b1Badge">Price intelligence</span>
+        <h3 class="display" data-i18n="b1.title">Never overpay for the same thing twice</h3>
+        <p data-i18n="b1.lead">Every offer for the item you\'re looking at, cheapest first, with the distance you\'d travel to get it and the stock it\'s actually sitting in.</p>
         <ul class="blist">
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Ranked by price, distance, rating or freshness — your call.</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Eight-week price history per shop, not just today's number.</li>
@@ -551,7 +639,7 @@
                   <circle class="dot" cx="212" cy="44" r="3.4" style="stroke:var(--teal)"/>
                 </svg>
               </div>
-              <div class="a-btnrow"><span class="b p">Reserve for pickup</span><span class="b g">Directions</span></div>
+              <div class="a-btnrow"><span class="b p" data-i18n="mockup.reservePickup">Reserve for pickup</span><span class="b g">Directions</span></div>
             </div>
           </div>
         </div>
@@ -568,9 +656,9 @@
 
     <div class="benefit flip">
       <div class="benefit-copy reveal right">
-        <span class="badge teal">Stock &amp; alerts</span>
-        <h3 class="display">Know it's in stock before you leave the house</h3>
-        <p>Stop the “is it still there?” phone call. Stock levels, open-now hours and pickup options come straight from the shopkeeper's dashboard — and reservations hold the item while you travel.</p>
+        <span class="badge teal" data-i18n="b2.badge">Stock &amp; alerts</span>
+        <h3 class="display" data-i18n="b2.title">Know it\'s in stock before you leave the house</h3>
+        <p data-i18n="b2.lead">Stop the “is it still there?” phone call. Stock levels, open-now hours and pickup options come straight from the shopkeeper\'s dashboard — and reservations hold the item while you travel.</p>
         <ul class="blist">
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Push alerts for price drops and restocks, closed app included.</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Reservation codes the owner sees in their live queue.</li>
@@ -590,11 +678,11 @@
               <span class="bell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-bell"/></svg><b></b></span>
             </div>
             <div class="a-body tight">
-              <div class="a-notif unread"><span class="ic">📉</span><span><b>Price drop on Wireless Earbuds Pro ANC</b><span>TechHub Point now ₦28,500 (was ₦29,500) — 3.4% below your saved price.</span></span></div>
-              <div class="a-notif unread"><span class="ic">🏷️</span><span><b>Deal near you: 15% off at Lekki Fashion Hub</b><span>Weekend fashion flash on sneakers &amp; bags ends in 2 days.</span></span></div>
-              <div class="a-notif"><span class="ic">✅</span><span><b>Reservation NBG-4821 ready for pickup</b><span>MegaMart Ikeja City Mall is holding 2× Parboiled Rice 5kg at the service desk.</span></span></div>
-              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-bolt"/></svg></span><span><b>Back in stock</b><span>65W GaN Fast Charger · MegaMart Ikeja</span></span></div>
-              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-clock"/></svg></span><span><b>Open now · closes 9:00 pm</b><span>SPAR Express Oniru · 1.8 km</span></span></div>
+              <div class="a-notif unread"><span class="ic">📉</span><span><b data-i18n="mockup.notifDrop">Price drop on Wireless Earbuds Pro ANC</b><span data-i18n="mockup.notifDropDesc">TechHub Point now {earbuds} (was {earbuds_old}) — 3.4% below your saved price.</span></span></div>
+              <div class="a-notif unread"><span class="ic">🏷️</span><span><b data-i18n="mockup.notifDeal">Deal near you: 15% off at Lekki Fashion Hub</b><span data-i18n="mockup.notifDealDesc">Weekend fashion flash on sneakers &amp; bags ends in 2 days.</span></span></div>
+              <div class="a-notif"><span class="ic">✅</span><span><b data-i18n="mockup.notifResReady">Reservation NBG-4821 ready for pickup</b><span data-i18n="mockup.notifResReadyDesc">MegaMart Ikeja City Mall is holding 2× Parboiled Rice 5kg at the service desk.</span></span></div>
+              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-bolt"/></svg></span><span><b data-i18n="mockup.backInStock">Back in stock</b><span data-i18n="mockup.backInStockCharger">65W GaN Fast Charger · MegaMart Ikeja</span></span></div>
+              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-clock"/></svg></span><span><b data-i18n="mockup.openNow">Open now · closes 9:00 pm</b><span data-i18n="mockup.openNowSpar">SPAR Express Oniru · 1.8 km</span></span></div>
             </div>
             <div class="a-nav">
               <span class="it"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-home"/></svg>Home</span>
@@ -606,23 +694,23 @@
           </div>
         </div>
         <div class="cardfloat tl">
-          <div class="ln"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bell"/></svg> Delivered with the app closed</div>
-          <div class="sm">Web Push · VAPID + aes128gcm</div>
+          <div class="ln"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bell"/></svg> <span data-i18n="mockup.cardClosed">Delivered with the app closed</span></div>
+          <div class="sm" data-i18n="mockup.cardClosedSub">Web Push · VAPID + aes128gcm</div>
         </div>
       </div>
     </div>
 
     <div class="benefit">
       <div class="benefit-copy reveal left">
-        <span class="badge purple">For shop owners</span>
-        <h3 class="display">A shop window that updates itself</h3>
-        <p>Shopkeepers update a price or a stock number once, and every shopper watching that item hears about it. No flyers, no “DM for price”, no stale listings.</p>
+        <span class="badge purple" data-i18n="benefits.b3Badge">For shop owners</span>
+        <h3 class="display" data-i18n="benefits.b3Title">A shop window that updates itself</h3>
+        <p data-i18n="benefits.b3Desc">Shopkeepers update a price or a stock number once, and every shopper watching that item hears about it. No flyers, no “DM for price”, no stale listings.</p>
         <ul class="blist">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Inventory CRUD that triggers watcher notifications server-side.</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Deals publish to shoppers inside their saved radius.</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Analytics: views, matches, clicks and reservations per listing.</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="benefits.b3Li1">Inventory CRUD that triggers watcher notifications server-side.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="benefits.b3Li2">Deals publish to shoppers inside their saved radius.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="benefits.b3Li3">Analytics: views, matches, clicks and reservations per listing.</span></li>
         </ul>
-        <a class="btn navy" href="#download">Peek at the dashboard <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <a class="btn navy" href="#download"><span data-i18n="benefits.b3Btn">Peek at the dashboard</span> <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </div>
       <div class="benefit-visual reveal right">
         <span class="glowring" aria-hidden="true"></span>
@@ -633,25 +721,25 @@
             <div class="a-top">
               <svg class="m" viewBox="0 0 512 512" style="--mark-pin:#fff;--mark-face:#fff"><use href="#mark"/></svg>
               <span class="t">TechHub Point</span>
-              <span class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-store"/></svg> Owner</span>
+              <span class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-store"/></svg> <span data-i18n="mockup.owner">Owner</span></span>
             </div>
             <div class="a-body tight">
               <div class="a-kpis">
-                <span class="a-kpi"><b>3,120</b><span>Views</span></span>
-                <span class="a-kpi"><b>861</b><span>Matches</span></span>
-                <span class="a-kpi"><b>640</b><span>Clicks</span></span>
-                <span class="a-kpi"><b>412</b><span>Followers</span></span>
+                <span class="a-kpi"><b>3,120</b><span data-i18n="mockup.views">Views</span></span>
+                <span class="a-kpi"><b>861</b><span data-i18n="mockup.matches">Matches</span></span>
+                <span class="a-kpi"><b>640</b><span data-i18n="mockup.clicks">Clicks</span></span>
+                <span class="a-kpi"><b>412</b><span data-i18n="mockup.followers">Followers</span></span>
               </div>
               <div class="a-bars" aria-hidden="true"><i style="height:42%"></i><i style="height:58%"></i><i style="height:36%"></i><i style="height:74%"></i><i style="height:52%"></i><i style="height:88%"></i><i style="height:64%"></i><i style="height:96%"></i></div>
               <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bolt"/></svg></span><span><b>Price updated → 3 watchers notified</b><span>Wireless Earbuds Pro ANC · ₦28,500</span></span></div>
               <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bookmark"/></svg></span><span><b>New reservation · NBG-4821</b><span>2× Parboiled Rice 5kg · ready for pickup</span></span></div>
-              <div class="a-btnrow"><span class="b p">Add listing</span><span class="b g">Post a deal</span></div>
+              <div class="a-btnrow"><span class="b p" data-i18n="mockup.addListing">Add listing</span><span class="b g" data-i18n="mockup.postDeal">Post a deal</span></div>
             </div>
           </div>
         </div>
         <div class="cardfloat br">
-          <div class="ln"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-users"/></svg> 412 followers watching</div>
-          <div class="sm">Notified on every price change</div>
+          <div class="ln"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-users"/></svg> <span data-i18n="mockup.cardFollowers">412 followers watching</span></div>
+          <div class="sm" data-i18n="mockup.cardFollowersSub">Notified on every price change</div>
         </div>
       </div>
     </div>
@@ -663,9 +751,9 @@
   <div class="wrap">
     <div class="screens-head">
       <div>
-        <span class="eyebrow reveal"><span class="dot"></span> Awesome interface</span>
-        <h2 class="display h2 reveal" id="screens-title" style="--d:60ms">Preview the app, screen by screen</h2>
-        <p class="lead reveal" style="--d:120ms;margin-top:12px">Five screens, one loop: find it, price it, reserve it, get told when it moves.</p>
+        <span class="eyebrow reveal"><span class="dot"></span> <span data-i18n="screens.eyebrow">Awesome interface</span></span>
+        <h2 class="display h2 reveal" id="screens-title" style="--d:60ms" data-i18n="screens.title">Preview the app, screen by screen</h2>
+        <p class="lead reveal" style="--d:120ms;margin-top:12px" data-i18n="screens.lead">Five screens, one loop: find it, price it, reserve it, get told when it moves.</p>
       </div>
       <div class="slider-nav reveal" style="--d:180ms">
         <button class="snav" id="screens-prev" aria-label="Previous screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-l"/></svg></button>
@@ -685,17 +773,17 @@
               <span class="loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-pin"/></svg> Lagos, NG</span>
             </div>
             <div class="a-body">
-              <div class="a-hi"><b>Hey there 👋</b><span>Stores within 10 km</span></div>
-              <div class="a-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-search"/></svg><span>Search items, brands…</span><span class="cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-camera"/></svg></span></div>
+              <div class="a-hi"><b data-i18n="mockup.hey">Hey there 👋</b><span data-i18n="mockup.storesWithin">Stores within 10 km</span></div>
+              <div class="a-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-search"/></svg><span data-i18n="mockup.searchPlaceholderShort">Search items, brands…</span><span class="cam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-camera"/></svg></span></div>
               <div class="a-sec"><b>Trending searches</b></div>
               <div class="a-cats" style="grid-template-columns:repeat(3,1fr)">
                 <span class="a-cat"><span>wireless earbuds</span></span>
                 <span class="a-cat"><span>rice 5kg</span></span>
                 <span class="a-cat"><span>power bank</span></span>
               </div>
-              <div class="a-offer"><span class="em">🎧</span><span class="tx"><b>Wireless Earbuds Pro ANC</b><span>TechHub Point · 1.2 km</span></span><span class="pr"><b>₦28,500</b><span class="ok">In stock</span></span></div>
-              <div class="a-offer"><span class="em">👟</span><span class="tx"><b>UrbanRun Sneakers</b><span>Lekki Fashion Hub · 4.2 km</span></span><span class="pr"><b>₦38,000</b><span class="warn">2 left</span></span></div>
-              <div class="a-offer"><span class="em">🍚</span><span class="tx"><b>Parboiled Rice 5kg</b><span>Yaba Market Grocers · 3.8 km</span></span><span class="pr"><b>₦8,200</b><span class="ok">In stock</span></span></div>
+              <div class="a-offer"><span class="em">🎧</span><span class="tx"><b data-i18n="mockup.earbudsPro">Wireless Earbuds Pro ANC</b><span>TechHub Point · 1.2 km</span></span><span class="pr"><b>₦28,500</b><span class="ok">In stock</span></span></div>
+              <div class="a-offer"><span class="em">👟</span><span class="tx"><b data-i18n="mockup.sneakers">UrbanRun Sneakers</b><span>Lekki Fashion Hub · 4.2 km</span></span><span class="pr"><b>₦38,000</b><span class="warn" data-i18n="mockup.twoLeft">2 left</span></span></div>
+              <div class="a-offer"><span class="em">🍚</span><span class="tx"><b data-i18n="mockup.rice">Parboiled Rice 5kg</b><span>Yaba Market Grocers · 3.8 km</span></span><span class="pr"><b>₦8,200</b><span class="ok">In stock</span></span></div>
             </div>
             <div class="a-nav">
               <span class="it on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-home"/></svg>Home</span>
@@ -706,7 +794,7 @@
             </div>
           </div>
         </div>
-        <div class="cap"><b>Home &amp; discovery</b><span>Radius-aware feed of what's near you right now</span></div>
+        <div class="cap"><b data-i18n="screens.cap1Title">Home &amp; discovery</b><span data-i18n="screens.cap1Desc">Radius-aware feed of what's near you right now</span></div>
       </div>
 
       <div class="screen-item">
@@ -717,20 +805,20 @@
             <div class="a-body tight" style="padding:0;gap:0">
               <div class="a-cam">
                 <div class="frame"></div><div class="scan"></div>
-                <div class="hint">Hold the item inside the frame</div>
+                <div class="hint" data-i18n="mockup.camHold">Hold the item inside the frame</div>
                 <div class="chips"><span>Photo</span><span>Barcode</span><span>Voice</span><span>URL</span></div>
               </div>
               <div class="a-sheet">
                 <div class="grab"></div>
-                <h5>3 matches · tap to compare prices</h5>
-                <div class="a-cand"><span class="em">🎧</span><span class="cx"><b>Wireless Earbuds Pro ANC</b><span class="bar"><i style="width:94%"></i></span></span><span class="pc">94%</span></div>
-                <div class="a-cand"><span class="em">🔊</span><span class="cx"><b>BoomGo Bluetooth Speaker</b><span class="bar"><i style="width:61%"></i></span></span><span class="pc">61%</span></div>
-                <div class="a-cand"><span class="em">🔌</span><span class="cx"><b>65W GaN Fast Charger</b><span class="bar"><i style="width:38%"></i></span></span><span class="pc">38%</span></div>
+                <h5 data-i18n="mockup.matchesTap">3 matches · tap to compare prices</h5>
+                <div class="a-cand"><span class="em">🎧</span><span class="cx"><b data-i18n="mockup.earbudsPro">Wireless Earbuds Pro ANC</b><span class="bar"><i style="width:94%"></i></span></span><span class="pc">94%</span></div>
+                <div class="a-cand"><span class="em">🔊</span><span class="cx"><b data-i18n="mockup.speaker">BoomGo Bluetooth Speaker</b><span class="bar"><i style="width:61%"></i></span></span><span class="pc">61%</span></div>
+                <div class="a-cand"><span class="em">🔌</span><span class="cx"><b data-i18n="mockup.chargerTitle">65W GaN Fast Charger</b><span class="bar"><i style="width:38%"></i></span></span><span class="pc">38%</span></div>
               </div>
             </div>
           </div>
         </div>
-        <div class="cap"><b>Snap &amp; match</b><span>Ranked candidates with confidence and evidence</span></div>
+        <div class="cap"><b data-i18n="screens.cap2Title">Snap &amp; match</b><span data-i18n="screens.cap2Desc">Ranked candidates with confidence and evidence</span></div>
       </div>
 
       <div class="screen-item">
@@ -740,26 +828,26 @@
             <div class="a-status"><span>9:41</span><span class="dots"><i></i><i></i><i></i><i></i></span></div>
             <div class="a-top">
               <svg class="m" viewBox="0 0 512 512" style="--mark-pin:#fff;--mark-face:#fff"><use href="#mark"/></svg>
-              <span class="t">Price comparison</span>
+              <span class="t" data-i18n="mockup.priceComparisonTitle">Price comparison</span>
             </div>
             <div class="a-body tight">
-              <div class="a-hero-em"><i>🎧</i><b>Wireless Earbuds Pro ANC</b><span>Soundcore · 3 offers nearby</span></div>
-              <div class="a-price best"><span class="st"><b>TechHub Point</b><span>1.2 km · verified</span></span><span class="amt"><b>₦28,500</b><span>Lowest</span></span></div>
-              <div class="a-price"><span class="st"><b>MegaMart Ikeja</b><span>2.4 km · pickup today</span></span><span class="amt"><b>₦31,900</b><span style="color:var(--muted)">+₦3,400</span></span></div>
-              <div class="a-price"><span class="st"><b>SPAR Express Oniru</b><span>6.1 km · restocking</span></span><span class="amt"><b>₦33,000</b><span style="color:var(--orange-dark)">Out</span></span></div>
+              <div class="a-hero-em"><i>🎧</i><b data-i18n="mockup.earbudsPro">Wireless Earbuds Pro ANC</b><span data-i18n="mockup.soundcoreOffers">Soundcore · 3 offers nearby</span></div>
+              <div class="a-price best"><span class="st"><b>TechHub Point</b><span data-i18n="mockup.techHubVerifiedShort">1.2 km · verified</span></span><span class="amt"><b>₦28,500</b><span>Lowest</span></span></div>
+              <div class="a-price"><span class="st"><b>MegaMart Ikeja</b><span data-i18n="mockup.megaMartPickup">2.4 km · pickup today</span></span><span class="amt"><b>₦31,900</b><span style="color:var(--muted)">+₦3,400</span></span></div>
+              <div class="a-price"><span class="st"><b>SPAR Express Oniru</b><span data-i18n="mockup.sparRestock">6.1 km · restocking</span></span><span class="amt"><b>₦33,000</b><span style="color:var(--orange-dark)">Out</span></span></div>
               <div class="a-chart">
-                <div class="hd"><b>Price history</b><span>8 weeks</span></div>
+                <div class="hd"><b data-i18n="mockup.priceHistory">Price history</b><span data-i18n="mockup.weeks8">8 weeks</span></div>
                 <svg viewBox="0 0 220 60" preserveAspectRatio="none" aria-hidden="true">
                   <path class="area" d="M4 18 34 26 64 22 94 34 124 30 154 42 184 38 212 46 212 60 4 60Z"/>
                   <path class="chart-line line" d="M4 18 34 26 64 22 94 34 124 30 154 42 184 38 212 46"/>
                   <circle class="dot" cx="212" cy="46" r="3.4"/>
                 </svg>
               </div>
-              <div class="a-btnrow"><span class="b p">Reserve for pickup</span><span class="b g">Watch price</span></div>
+              <div class="a-btnrow"><span class="b p" data-i18n="mockup.reservePickup">Reserve for pickup</span><span class="b g" data-i18n="mockup.watchPrice">Watch price</span></div>
             </div>
           </div>
         </div>
-        <div class="cap"><b>Compare &amp; reserve</b><span>Every offer, its distance, its history, one button to hold it</span></div>
+        <div class="cap"><b data-i18n="screens.cap3Title">Compare &amp; reserve</b><span data-i18n="screens.cap3Desc">Every offer, its distance, its history, one button to hold it</span></div>
       </div>
 
       <div class="screen-item">
@@ -770,19 +858,19 @@
             <div class="a-body tight" style="padding:0;gap:0">
               <div class="a-cam" style="min-height:150px">
                 <div class="frame" style="inset:24% 32% 34%"></div><div class="scan" style="left:32%;right:32%"></div>
-                <div class="hint">Barcode detected · EAN 6151000000011</div>
+                <div class="hint" data-i18n="mockup.barcodeDetected">Barcode detected · EAN 6151000000011</div>
               </div>
               <div class="a-sheet">
                 <div class="grab"></div>
-                <h5>Matched by barcode · exact</h5>
-                <div class="a-cand"><span class="em">🎧</span><span class="cx"><b>Wireless Earbuds Pro ANC</b><span class="bar"><i style="width:95%"></i></span></span><span class="pc">95%</span></div>
-                <div class="a-cand"><span class="em">📍</span><span class="cx"><b>Nearest stock: TechHub Point</b><span style="font-size:.55rem;color:var(--muted)">1.2 km · 12 units · ₦28,500</span></span></div>
-                <div class="a-btnrow" style="margin-top:8px"><span class="b p">Reserve</span><span class="b g">Call shop</span></div>
+                <h5 data-i18n="mockup.matchedBarcode">Matched by barcode · exact</h5>
+                <div class="a-cand"><span class="em">🎧</span><span class="cx"><b data-i18n="mockup.earbudsPro">Wireless Earbuds Pro ANC</b><span class="bar"><i style="width:95%"></i></span></span><span class="pc">95%</span></div>
+                <div class="a-cand"><span class="em">📍</span><span class="cx"><b data-i18n="mockup.nearestStock">Nearest stock: TechHub Point</b><span style="font-size:.55rem;color:var(--muted)">1.2 km · 12 units · ₦28,500</span></span></div>
+                <div class="a-btnrow" style="margin-top:8px"><span class="b p" data-i18n="mockup.reserve">Reserve</span><span class="b g" data-i18n="mockup.callShop">Call shop</span></div>
               </div>
             </div>
           </div>
         </div>
-        <div class="cap"><b>Barcode mode</b><span>An exact hit when the label is readable</span></div>
+        <div class="cap"><b data-i18n="screens.cap4Title">Barcode mode</b><span data-i18n="screens.cap4Desc">An exact hit when the label is readable</span></div>
       </div>
 
       <div class="screen-item">
@@ -792,20 +880,20 @@
             <div class="a-status"><span>9:41</span><span class="dots"><i></i><i></i><i></i><i></i></span></div>
             <div class="a-top">
               <svg class="m" viewBox="0 0 512 512" style="--mark-pin:#fff;--mark-face:#fff"><use href="#mark"/></svg>
-              <span class="t">Saved &amp; collections</span>
+              <span class="t" data-i18n="mockup.savedCollectionsTitle">Saved &amp; collections</span>
             </div>
             <div class="a-body tight">
-              <div class="a-sec"><b>Watchlist</b><span>Price alerts on</span></div>
-              <div class="a-offer"><span class="em">🎧</span><span class="tx"><b>Wireless Earbuds Pro ANC</b><span>Now ₦28,500 · was ₦31,900</span></span><span class="pr"><b>−10%</b><span class="ok">Watching</span></span></div>
-              <div class="a-offer"><span class="em">🍚</span><span class="tx"><b>Parboiled Rice 5kg</b><span>Yaba Market Grocers</span></span><span class="pr"><b>₦8,200</b><span class="ok">In stock</span></span></div>
-              <div class="a-offer"><span class="em">👟</span><span class="tx"><b>UrbanRun Sneakers</b><span>Lekki Fashion Hub</span></span><span class="pr"><b>₦38,000</b><span class="warn">2 left</span></span></div>
-              <div class="a-sec"><b>Collection · House move</b><span>6 items</span></div>
-              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-grid"/></svg></span><span><b>3-Seater Sofa (Oakville)</b><span>Surulere Home &amp; Living · ₦285,000</span></span></div>
-              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-grid"/></svg></span><span><b>Non-stick Pot Set (5pc)</b><span>Surulere Home &amp; Living · ₦26,500</span></span></div>
+              <div class="a-sec"><b data-i18n="mockup.watchlist">Watchlist</b><span data-i18n="mockup.priceAlertsOn">Price alerts on</span></div>
+              <div class="a-offer"><span class="em">🎧</span><span class="tx"><b data-i18n="mockup.earbudsPro">Wireless Earbuds Pro ANC</b><span>Now ₦28,500 · was ₦31,900</span></span><span class="pr"><b>−10%</b><span class="ok" data-i18n="mockup.watching">Watching</span></span></div>
+              <div class="a-offer"><span class="em">🍚</span><span class="tx"><b data-i18n="mockup.rice">Parboiled Rice 5kg</b><span>Yaba Market Grocers</span></span><span class="pr"><b>₦8,200</b><span class="ok">In stock</span></span></div>
+              <div class="a-offer"><span class="em">👟</span><span class="tx"><b data-i18n="mockup.sneakers">UrbanRun Sneakers</b><span>Lekki Fashion Hub</span></span><span class="pr"><b>₦38,000</b><span class="warn" data-i18n="mockup.twoLeft">2 left</span></span></div>
+              <div class="a-sec"><b data-i18n="mockup.collHouseMove">Collection · House move</b><span data-i18n="mockup.sixItems">6 items</span></div>
+              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-grid"/></svg></span><span><b data-i18n="mockup.sofa">3-Seater Sofa (Oakville)</b><span>Surulere Home &amp; Living · ₦285,000</span></span></div>
+              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-grid"/></svg></span><span><b data-i18n="mockup.potSet">Non-stick Pot Set (5pc)</b><span>Surulere Home &amp; Living · ₦26,500</span></span></div>
             </div>
           </div>
         </div>
-        <div class="cap"><b>Save &amp; organise</b><span>Watchlists and named collections, price-watched for you</span></div>
+        <div class="cap"><b data-i18n="screens.cap5Title">Save &amp; organise</b><span data-i18n="screens.cap5Desc">Watchlists and named collections, price-watched for you</span></div>
       </div>
     </div>
 
@@ -817,15 +905,15 @@
 <section class="sec tight dark" aria-labelledby="facts-title">
   <div class="wrap">
     <div class="sechead">
-      <span class="eyebrow on-dark reveal"><span class="dot"></span> Our key facts</span>
-      <h2 class="display h2 reveal" id="facts-title" style="--d:60ms">Real numbers from the bundled demo market</h2>
-      <p class="lead reveal" style="--d:120ms;margin-top:10px">Nothing here is aspirational — this is the dataset every install ships with, and the API surface behind it.</p>
+      <span class="eyebrow on-dark reveal"><span class="dot"></span> <span data-i18n="facts.eyebrow">Our key facts</span></span>
+      <h2 class="display h2 reveal" id="facts-title" style="--d:60ms" data-i18n="facts.title">Real numbers from the bundled demo market</h2>
+      <p class="lead reveal" style="--d:120ms;margin-top:10px" data-i18n="facts.lead">Nothing here is aspirational — this is the dataset every install ships with, and the API surface behind it.</p>
     </div>
     <div class="facts">
-      <div class="fact reveal scale" style="--d:0ms"><b><span data-count="33">33</span><i>+</i></b><span>Documented API endpoints</span></div>
-      <div class="fact reveal scale" style="--d:90ms"><b><span data-count="74">74</span></b><span>Offers tracked in the demo market</span></div>
-      <div class="fact reveal scale" style="--d:180ms"><b><span data-count="28">28</span></b><span>Products across 8 categories</span></div>
-      <div class="fact reveal scale" style="--d:270ms"><b><span data-count="8">8</span></b><span>Lagos stores with hours &amp; stock</span></div>
+      <div class="fact reveal scale" style="--d:0ms"><b><span data-count="33">33</span><i>+</i></b><span data-i18n="facts.f1">Documented API endpoints</span></div>
+      <div class="fact reveal scale" style="--d:90ms"><b><span data-count="74">74</span></b><span data-i18n="facts.f2">Offers tracked in the demo market</span></div>
+      <div class="fact reveal scale" style="--d:180ms"><b><span data-count="28">28</span></b><span data-i18n="facts.f3">Products across 8 categories</span></div>
+      <div class="fact reveal scale" style="--d:270ms"><b><span data-count="8">8</span></b><span data-i18n="facts.f4">Lagos stores with hours &amp; stock</span></div>
     </div>
   </div>
 </section>
@@ -835,8 +923,8 @@
   <span class="deco l" aria-hidden="true"></span>
   <div class="wrap">
     <div class="sechead">
-      <span class="eyebrow reveal"><span class="dot"></span> Testimonials</span>
-      <h2 class="display h2 reveal" id="reviews-title" style="--d:60ms">Hear what our satisfied users say</h2>
+      <span class="eyebrow reveal"><span class="dot"></span> <span data-i18n="reviews.eyebrow">Testimonials</span></span>
+      <h2 class="display h2 reveal" id="reviews-title" style="--d:60ms" data-i18n="reviews.title">Hear what our satisfied users say</h2>
     </div>
 
     <div class="tst-layout">
@@ -849,7 +937,7 @@
           <span class="av" style="background:#2fbcc7">CE</span>
           <span class="av" style="background:#7c6bc8">AO</span>
         </div>
-        <p><b>Average of the 10 reviews</b> shipped in the demo dataset — the ones shop owners and shoppers can react to inside the app.</p>
+        <p data-i18n="reviews.scorecard"><b>Average of the 10 reviews</b> shipped in the demo dataset — the ones shop owners and shoppers can react to inside the app.</p>
       </div>
 
       <div class="reveal right">
@@ -858,28 +946,28 @@
             <div class="tst">
               <div class="quote">
                 <div class="stars">★★★★★</div>
-                <p class="text">“Found it in 2 minutes via photo search — price was exactly as listed. ANC is superb.”</p>
+                <p class="text" data-i18n="reviews.q1">“Found it in 2 minutes via photo search — price was exactly as listed. ANC is superb.”</p>
                 <div class="who"><span class="av" style="background:#232c5c">DS</span><span><b>Demo Shopper</b><span>Reviewing TechHub Point · demo market</span></span></div>
               </div>
             </div>
             <div class="tst">
               <div class="quote">
                 <div class="stars">★★★★★</div>
-                <p class="text">“Rice promo price honoured at the till. Queue was short on a Tuesday.”</p>
+                <p class="text" data-i18n="reviews.q2">“Rice promo price honoured at the till. Queue was short on a Tuesday.”</p>
                 <div class="who"><span class="av" style="background:#e87b29">TB</span><span><b>Tunde Bakare</b><span>Reviewing MegaMart Ikeja City Mall · demo market</span></span></div>
               </div>
             </div>
             <div class="tst">
               <div class="quote">
                 <div class="stars">★★★★★</div>
-                <p class="text">“Serum sealed and batch-verified. Staff checked the NAFDAC code with me.”</p>
+                <p class="text" data-i18n="reviews.q3">“Serum sealed and batch-verified. Staff checked the NAFDAC code with me.”</p>
                 <div class="who"><span class="av" style="background:#2fbcc7">CE</span><span><b>Chidi Emezue</b><span>Reviewing VI Beauty Co. · demo market</span></span></div>
               </div>
             </div>
             <div class="tst">
               <div class="quote">
                 <div class="stars">★★★★<span style="color:#d9dde8">★</span></div>
-                <p class="text">“Open till 10pm saved me. Curbside pickup worked smoothly.”</p>
+                <p class="text" data-i18n="reviews.q4">“Open till 10pm saved me. Curbside pickup worked smoothly.”</p>
                 <div class="who"><span class="av" style="background:#7c6bc8">DS</span><span><b>Demo Shopper</b><span>Reviewing SPAR Express Oniru · demo market</span></span></div>
               </div>
             </div>
@@ -887,7 +975,7 @@
         </div>
         <div class="demo-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-info"/></svg>
-          <span>These are the reviews bundled with the demo dataset, not customer claims. Swap in your own market — the review, rating and helpful-vote endpoints are live at <b>/api/v1/stores/:id/reviews</b>.</span>
+          <span data-i18n-html="reviews.demoNote">These are the reviews bundled with the demo dataset, not customer claims. Swap in your own market — the review, rating and helpful-vote endpoints are live at <b>/api/v1/stores/:id/reviews</b>.</span>
         </div>
         <div class="tst-ctrl">
           <button class="snav" id="tst-prev" aria-label="Previous review"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-l"/></svg></button>
@@ -904,29 +992,29 @@
   <div class="wrap">
     <div class="why-grid">
       <div>
-        <span class="eyebrow reveal"><span class="dot"></span> Why choose us</span>
-        <h2 class="display h2 reveal" id="why-title" style="--d:60ms">Your reliable partner for local shopping</h2>
+        <span class="eyebrow reveal"><span class="dot"></span> <span data-i18n="why.eyebrow">Why choose us</span></span>
+        <h2 class="display h2 reveal" id="why-title" style="--d:60ms" data-i18n="why.title">Your reliable partner for local shopping</h2>
         <div class="why-list">
           <div class="why-item reveal" style="--d:100ms">
             <span class="itile orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg></span>
-            <div><div class="h4">API-first, one contract for every client</div><p>One contract (<b>/api/v1</b>, OpenAPI published) serves the iOS and Android apps — generate Swift or Kotlin clients straight from the spec.</p></div>
+            <div><div class="h4" data-i18n="tech.c1Title">API-first, one contract for every client</div><p data-i18n-html="tech.c1Desc">One contract (<b>/api/v1</b>, OpenAPI published) serves the iOS and Android apps — generate Swift or Kotlin clients straight from the spec.</p></div>
           </div>
           <div class="why-item reveal" style="--d:160ms">
             <span class="itile teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bolt"/></svg></span>
-            <div><div class="h4">Zero dependencies to run it</div><p>The whole backend is dependency-free Node 18+ — <code>node server.js</code> and you're live. The same handler runs as a serverless function on Vercel with KV persistence.</p></div>
+            <div><div class="h4" data-i18n="tech.c2Title">Zero dependencies to run it</div><p data-i18n-html="tech.c2Desc">The whole backend is dependency-free Node 18+ — <code>node server.js</code> and you\'re live. The same handler runs as a serverless function on Vercel with KV persistence.</p></div>
           </div>
           <div class="why-item reveal" style="--d:220ms">
             <span class="itile purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-lock"/></svg></span>
-            <div><div class="h4">Security and privacy by default</div><p>scrypt password hashing, HMAC JWTs, role guards, per-IP rate limits, strict CSP, GDPR export/delete in the profile — and manual location entry if you'd rather not share GPS.</p></div>
+            <div><div class="h4" data-i18n="tech.c3Title">Security and privacy by default</div><p data-i18n="tech.c3Desc">scrypt password hashing, HMAC JWTs, role guards, per-IP rate limits, strict CSP, GDPR export/delete in the profile — and manual location entry if you\'d rather not share GPS.</p></div>
           </div>
           <div class="why-item reveal" style="--d:280ms">
             <span class="itile pink"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-globe"/></svg></span>
-            <div><div class="h4">Local first, by design</div><p>NGN pricing, Paystack checkout, Lagos-shaped demo data, delivery/curbside/pickup flags per store and hours that reflect how neighbourhood shops actually trade.</p></div>
+            <div><div class="h4" data-i18n="tech.c4Title">Local first, by design</div><p data-i18n="tech.c4Desc">NGN pricing, Paystack checkout, Lagos-shaped demo data, delivery/curbside/pickup flags per store and hours that reflect how neighbourhood shops actually trade.</p></div>
           </div>
         </div>
         <div class="btn-row reveal" style="--d:320ms">
-          <a class="btn primary" href="#download">Start your journey <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
-          <a class="btn ghost" href="/api/docs" target="_blank" rel="noopener">Read the API docs</a>
+          <a class="btn primary" href="#download"><span data-i18n="why.btnStart">Start your journey</span> <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+          <a class="btn ghost" href="/api/docs" target="_blank" rel="noopener" data-i18n="why.btnApiDocs">Read the API docs</a>
         </div>
       </div>
 
@@ -939,15 +1027,15 @@
             <div class="a-status"><span>9:41</span><span class="dots"><i></i><i></i><i></i><i></i></span></div>
             <div class="a-top">
               <svg class="m" viewBox="0 0 512 512" style="--mark-pin:#fff;--mark-face:#fff"><use href="#mark"/></svg>
-              <span class="t">OpenAPI · /api/docs</span>
+              <span class="t" data-i18n="tech.openapiTitle">OpenAPI · /api/docs</span>
             </div>
             <div class="a-body tight">
-              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg></span><span><b>POST /api/v1/recognize</b><span>signals → ranked candidates + evidence</span></span></div>
-              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg></span><span><b>POST /api/v1/search</b><span>geo + filters + sort + paging</span></span></div>
-              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg></span><span><b>POST /api/v1/reservations</b><span>stock hold + owner queue</span></span></div>
-              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg></span><span><b>POST /api/v1/push/subscribe</b><span>VAPID Web Push registration</span></span></div>
-              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg></span><span><b>GET /api/v1/business/analytics</b><span>views · matches · clicks · revenue</span></span></div>
-              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg></span><span><b>33 endpoints · OpenAPI 3 spec</b><span>try them all in the docs page</span></span></div>
+              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg></span><span><b>POST /api/v1/recognize</b><span data-i18n="tech.ep1">signals → ranked candidates + evidence</span></span></div>
+              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg></span><span><b>POST /api/v1/search</b><span data-i18n="tech.ep2">geo + filters + sort + paging</span></span></div>
+              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg></span><span><b>POST /api/v1/reservations</b><span data-i18n="tech.ep3">stock hold + owner queue</span></span></div>
+              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg></span><span><b>POST /api/v1/push/subscribe</b><span data-i18n="tech.ep4">VAPID Web Push registration</span></span></div>
+              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg></span><span><b>GET /api/v1/business/analytics</b><span data-i18n="tech.ep5">views · matches · clicks · revenue</span></span></div>
+              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg></span><span><b data-i18n="tech.specBadge">33 endpoints · OpenAPI 3 spec</b><span data-i18n="tech.specTry">try them all in the docs page</span></span></div>
             </div>
           </div>
         </div>
@@ -960,29 +1048,29 @@
 <section class="sec white" id="how" aria-labelledby="how-title">
   <div class="wrap">
     <div class="sechead">
-      <span class="eyebrow reveal"><span class="dot"></span> How it works</span>
-      <h2 class="display h2 reveal" id="how-title" style="--d:60ms">Four steps from “I want this” to “it's behind the counter”</h2>
+      <span class="eyebrow reveal"><span class="dot"></span> <span data-i18n="how.eyebrow">How it works</span></span>
+      <h2 class="display h2 reveal" id="how-title" style="--d:60ms" data-i18n="how.title">Four steps from “I want this” to “it's behind the counter”</h2>
     </div>
     <div class="steps">
       <div class="step reveal" style="--d:0ms">
         <div class="num">01</div>
-        <h3 class="h4">Capture the item</h3>
-        <p>Photo, barcode, voice, link or plain text. The recognizer scores every signal against the catalogue and returns ranked candidates with confidence.</p>
+        <h3 class="h4" data-i18n="how.s1Title">Capture the item</h3>
+        <p data-i18n="how.s1Desc">Photo, barcode, voice, link or plain text. The recognizer scores every signal against the catalogue and returns ranked candidates with confidence.</p>
       </div>
       <div class="step reveal" style="--d:90ms">
         <div class="num">02</div>
-        <h3 class="h4">Match the signals</h3>
-        <p>Barcode hits are decisive; name and brand tokens are weighted; colours count more when they're rare in the catalogue. You can see exactly what matched.</p>
+        <h3 class="h4" data-i18n="how.s2Title">Match the signals</h3>
+        <p data-i18n="how.s2Desc">Barcode hits are decisive; name and brand tokens are weighted; colours count more when they're rare in the catalogue. You can see exactly what matched.</p>
       </div>
       <div class="step reveal" style="--d:180ms">
         <div class="num">03</div>
-        <h3 class="h4">Compare nearby stores</h3>
-        <p>Offers inside your radius, sorted by price or distance, with stock, condition, hours, pickup options and an eight-week price history.</p>
+        <h3 class="h4" data-i18n="how.s3Title">Compare nearby stores</h3>
+        <p data-i18n="how.s3Desc">Offers inside your radius, sorted by price or distance, with stock, condition, hours, pickup options and an eight-week price history.</p>
       </div>
       <div class="step reveal" style="--d:270ms">
         <div class="num">04</div>
-        <h3 class="h4">Reserve &amp; get alerts</h3>
-        <p>Hold the item with a pickup code, then let the watchlist do the work: price-drop and back-in-stock push notifications land even with the app closed.</p>
+        <h3 class="h4" data-i18n="how.s4Title">Reserve &amp; get alerts</h3>
+        <p data-i18n="how.s4Desc">Hold the item with a pickup code, then let the watchlist do the work: price-drop and back-in-stock push notifications land even with the app closed.</p>
       </div>
     </div>
   </div>
@@ -992,71 +1080,71 @@
 <section class="sec tint" id="pricing" aria-labelledby="pricing-title">
   <div class="wrap">
     <div class="sechead">
-      <span class="eyebrow reveal"><span class="dot"></span> Pricing plan</span>
-      <h2 class="display h2 reveal" id="pricing-title" style="--d:60ms">Simple plans, packed with the useful bits</h2>
-      <p class="lead reveal" style="--d:120ms">Searching, comparing and saving are free forever. Premium removes the limits; shops pay only when they're selling.</p>
+      <span class="eyebrow reveal"><span class="dot"></span> <span data-i18n="pricing.eyebrow">Pricing plan</span></span>
+      <h2 class="display h2 reveal" id="pricing-title" style="--d:60ms" data-i18n="pricing.title">Simple plans, packed with the useful bits</h2>
+      <p class="lead reveal" style="--d:120ms" data-i18n="pricing.lead">Searching, comparing and saving are free forever. Premium removes the limits; shops pay only when they're selling.</p>
     </div>
 
     <div class="price-grid">
       <div class="price reveal">
         <div class="plan">
           <span class="itile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-search"/></svg></span>
-          <span><b>Free</b><span>For every shopper</span></span>
+          <span><b data-i18n="pricing.freeTitle">Free</b><span data-i18n="pricing.freeSub">For every shopper</span></span>
         </div>
-        <div class="amt"><b>₦0</b><span>/ forever</span></div>
-        <div class="per">No card, no account needed to look around.</div>
+        <div class="amt"><b data-price-key="free">$0</b><span data-i18n="pricing.freePeriod">/ forever</span></div>
+        <div class="per" data-i18n="pricing.freePer">No card, no account needed to look around.</div>
         <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Photo, barcode, voice, URL &amp; text search</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Radius discovery &amp; cross-store price comparison</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Price history for every offer</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Save items, collections &amp; search history</li>
-          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-x"/></svg> Priority alerts &amp; price-drop predictions</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="pricing.freeLi1">Photo, barcode, voice, URL &amp; text search</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="pricing.freeLi2">Radius discovery &amp; cross-store price comparison</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="pricing.freeLi3">Price history for every offer</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="pricing.freeLi4">Save items, collections &amp; search history</span></li>
+          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-x"/></svg> <span data-i18n="pricing.freeLi5">Priority alerts &amp; price-drop predictions</span></li>
         </ul>
-        <a class="btn ghost" href="#download">Start free</a>
+        <a class="btn ghost" href="#download" data-i18n="pricing.freeBtn">Start free</a>
       </div>
 
       <div class="price featured reveal" style="--d:90ms">
-        <span class="badge orange ribbon">Most popular</span>
+        <span class="badge orange ribbon" data-i18n="pricing.premBadge">Most popular</span>
         <div class="plan">
           <span class="itile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-spark"/></svg></span>
-          <span><b>Shopper Premium</b><span>For deal hunters</span></span>
+          <span><b data-i18n="pricing.premTitle">Shopper Premium</b><span data-i18n="pricing.premSub">For deal hunters</span></span>
         </div>
-        <div class="amt"><b>₦1,500</b><span>/ month</span></div>
-        <div class="per">Cancel anytime · billed through Paystack.</div>
+        <div class="amt"><b data-price-key="prem">$1.99</b><span data-i18n="pricing.premPeriod">/ month</span></div>
+        <div class="per" data-i18n="pricing.premPer">Cancel anytime · billed through Paystack.</div>
         <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Unlimited searches</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Ad-free browsing</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Priority price alerts</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Price-drop predictions</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Receipts &amp; payment history in-app</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="pricing.premLi1">Unlimited searches</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="pricing.premLi2">Ad-free browsing</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="pricing.premLi3">Priority price alerts</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="pricing.premLi4">Price-drop predictions</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="pricing.premLi5">Receipts &amp; payment history in-app</span></li>
         </ul>
-        <a class="btn primary" href="#download">Go premium</a>
+        <a class="btn primary" href="#download" data-i18n="pricing.premBtn">Go premium</a>
       </div>
 
       <div class="price reveal" style="--d:180ms">
         <div class="plan">
           <span class="itile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-users"/></svg></span>
-          <span><b>Family Plan</b><span>Up to 6 people</span></span>
+          <span><b data-i18n="pricing.famTitle">Family Plan</b><span data-i18n="pricing.famSub">Up to 6 people</span></span>
         </div>
-        <div class="amt"><b>₦2,500</b><span>/ month</span></div>
-        <div class="per">One bill, everyone's watchlists.</div>
+        <div class="amt"><b data-price-key="fam">$2.99</b><span data-i18n="pricing.famPeriod">/ month</span></div>
+        <div class="per" data-i18n="pricing.famPer">One bill, everyone's watchlists.</div>
         <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Everything in Premium</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Up to 6 household members</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Shared watchlists &amp; collections</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Shared reservation history</li>
-          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-x"/></svg> Store listing tools</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="pricing.famLi1">Everything in Premium</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="pricing.famLi2">Up to 6 household members</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="pricing.famLi3">Shared watchlists &amp; collections</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> <span data-i18n="pricing.famLi4">Shared reservation history</span></li>
+          <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-x"/></svg> <span data-i18n="pricing.famLi5">Store listing tools</span></li>
         </ul>
-        <a class="btn ghost" href="#download">Choose family</a>
+        <a class="btn ghost" href="#download" data-i18n="pricing.famBtn">Choose family</a>
       </div>
     </div>
 
     <div class="price-note reveal">
       <div class="pills">
-        <span class="pillx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-store"/></svg> Store Basic · ₦15,000/mo — 200 listings, analytics, deals</span>
-        <span class="pillx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chart"/></svg> Store Professional · ₦35,000/mo — unlimited listings, promotions, POS path</span>
+        <span class="pillx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-store"/></svg> <span data-i18n="pricing.pillBasic">Store Basic · {store_basic}/mo — 200 listings, analytics, deals</span></span>
+        <span class="pillx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chart"/></svg> <span data-i18n="pricing.pillPro">Store Professional · {store_pro}/mo — unlimited listings, promotions, POS path</span></span>
       </div>
-      <span class="small muted">Checkout runs on Paystack (test mode until live keys are configured) with signed webhooks and in-app receipts.</span>
+      <span class="small muted" data-i18n="pricing.checkoutNote">Checkout runs on Paystack (test mode until live keys are configured) with signed webhooks and in-app receipts.</span>
     </div>
   </div>
 </section>
@@ -1072,8 +1160,8 @@
     <div class="faq-grid">
       <div class="faq-side reveal left">
         <span class="itile orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-info"/></svg></span>
-        <h3 class="h3">Still curious?</h3>
-        <p>Everything below is verifiable in the repo — the API docs, the OpenAPI spec, the demo dataset, the Android guide and the deploy notes are all public.</p>
+        <h3 class="h3" data-i18n="faq.stillCurious">Still curious?</h3>
+        <p data-i18n="faq.stillCuriousDesc">Everything below is verifiable in the repo — the API docs, the OpenAPI spec, the demo dataset, the Android guide and the deploy notes are all public.</p>
         <div class="cta-list">
           <a class="btn ghost" href="/api/docs" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg> Browse the API docs</a>
           <a class="btn ghost" href="https://github.com/YungChuckTaylor/nearbuy" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24" fill="currentColor"><use href="#i-github"/></svg> See the source</a>
@@ -1083,36 +1171,36 @@
 
       <div class="faq">
         <div class="faq-item">
-          <button class="faq-q" type="button">What exactly is NearBuyGoods?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
-          <div class="faq-a"><div class="inner">A storefront for what's already on the shelves around you. You upload or describe an item; the service identifies it, finds nearby stores holding it, compares their prices and stock, and lets you reserve it for pickup. The same REST API powers the iOS and Android apps.</div></div>
+          <button class="faq-q" type="button"><span data-i18n="faq.qWhatIs">What exactly is NearBuyGoods?</span><span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
+          <div class="faq-a"><div class="inner" data-i18n="faq.aWhatIs">A storefront for what's already on the shelves around you. You upload or describe an item; the service identifies it, finds nearby stores holding it, compares their prices and stock, and lets you reserve it for pickup. The same REST API powers the iOS and Android apps.</div></div>
         </div>
         <div class="faq-item">
-          <button class="faq-q" type="button">How does the photo search actually work?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
-          <div class="faq-a"><div class="inner">The client extracts dominant colours and decodes barcodes when present; those signals go to <b>POST /api/v1/recognize</b>, which scores them against the catalogue. A barcode hit is decisive (0.95), name tokens weigh most, and colour matches count more when the colour is rare in the catalogue. You get ranked candidates with a confidence score and the evidence list (<b>matched_on</b>) so you can see why something surfaced.</div></div>
+          <button class="faq-q" type="button"><span data-i18n="faq.qHowPhoto">How does the photo search actually work?</span><span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
+          <div class="faq-a"><div class="inner" data-i18n-html="faq.aHowPhoto">The client extracts dominant colours and decodes barcodes when present; those signals go to <b>POST /api/v1/recognize</b>, which scores them against the catalogue. A barcode hit is decisive (0.95), name tokens weigh most, and colour matches count more when the colour is rare in the catalogue. You get ranked candidates with a confidence score and the evidence list (<b>matched_on</b>) so you can see why something surfaced.</div></div>
         </div>
         <div class="faq-item">
-          <button class="faq-q" type="button">Do I need an account?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
-          <div class="faq-a"><div class="inner">Not to look around — guest mode covers search, discovery, product pages and price history. An account (email + password, or the OTP flow) unlocks saving, collections, reservations, alerts and receipts. In demo mode you can sign in instantly as shopper, store owner or admin.</div></div>
+          <button class="faq-q" type="button"><span data-i18n="faq.qNeedAccount">Do I need an account?</span><span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
+          <div class="faq-a"><div class="inner" data-i18n="faq.aNeedAccount">Not to look around — guest mode covers search, discovery, product pages and price history. An account (email + password, or the OTP flow) unlocks saving, collections, reservations, alerts and receipts. In demo mode you can sign in instantly as shopper, store owner or admin.</div></div>
         </div>
         <div class="faq-item">
-          <button class="faq-q" type="button">Which devices can run it?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
-          <div class="faq-a"><div class="inner">An iPhone or an Android phone, once the app lands — it's in final review for the App Store and Google Play. The apps wrap the same interface with native camera, GPS, file-picker and download bridges, and talk to the same API.</div></div>
+          <button class="faq-q" type="button"><span data-i18n="faq.qDevices">Which devices can run it?</span><span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
+          <div class="faq-a"><div class="inner" data-i18n="faq.a1">An iPhone or an Android phone, once the app lands — it's in final review for the App Store and Google Play. The apps wrap the same interface with native camera, GPS, file-picker and download bridges, and talk to the same API.</div></div>
         </div>
         <div class="faq-item">
-          <button class="faq-q" type="button">Is the data real?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
-          <div class="faq-a"><div class="inner">Every install ships with a clearly labelled, fictional Lagos market: 8 stores, 28 products, 74 offers, deals, reviews and reservations. It's a working playground for the whole loop. Point the app at your own store data (or your own deployment) and the same flows apply to real listings.</div></div>
+          <button class="faq-q" type="button"><span data-i18n="faq.q2">Is the data real?</span><span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
+          <div class="faq-a"><div class="inner" data-i18n="faq.a2">Every install ships with a clearly labelled, fictional Lagos market: 8 stores, 28 products, 74 offers, deals, reviews and reservations. It's a working playground for the whole loop. Point the app at your own store data (or your own deployment) and the same flows apply to real listings.</div></div>
         </div>
         <div class="faq-item">
-          <button class="faq-q" type="button">What does it cost?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
-          <div class="faq-a"><div class="inner">Shoppers can search, compare, save and reserve on the free tier. Premium (₦1,500/month) adds unlimited searches, no ads, priority alerts and price-drop predictions; the Family plan (₦2,500/month) covers up to six people. Stores pay ₦15,000 or ₦35,000 a month depending on listing limits and analytics depth.</div></div>
+          <button class="faq-q" type="button"><span data-i18n="faq.q3">What does it cost?</span><span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
+          <div class="faq-a"><div class="inner" data-i18n="faq.a3">Shoppers can search, compare, save and reserve on the free tier. Premium ({prem}/month) adds unlimited searches, no ads, priority alerts and price-drop predictions; the Family plan ({fam}/month) covers up to six people. Stores pay {store_basic} or {store_pro} a month depending on listing limits and analytics depth.</div></div>
         </div>
         <div class="faq-item">
-          <button class="faq-q" type="button">I own a shop — how do I list it?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
-          <div class="faq-a"><div class="inner">Register as a store owner, add your store's address, hours and pickup options, then load inventory with prices and stock. The dashboard tracks views, matches, clicks and reservations, and any price or stock change automatically notifies shoppers who are watching that item.</div></div>
+          <button class="faq-q" type="button"><span data-i18n="faq.q4">I own a shop — how do I list it?</span><span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
+          <div class="faq-a"><div class="inner" data-i18n="faq.a4">Register as a store owner, add your store's address, hours and pickup options, then load inventory with prices and stock. The dashboard tracks views, matches, clicks and reservations, and any price or stock change automatically notifies shoppers who are watching that item.</div></div>
         </div>
         <div class="faq-item">
-          <button class="faq-q" type="button">What happens to my location data?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
-          <div class="faq-a"><div class="inner">Your coordinates are used to compute distances inside your chosen radius — that's it. You can skip GPS entirely and type a location or drop a pin by hand, and the profile has one-tap GDPR export and account deletion. Passwords are hashed with scrypt, sessions are HMAC-signed JWTs, and every write is validated server-side.</div></div>
+          <button class="faq-q" type="button"><span data-i18n="faq.q5">What happens to my location data?</span><span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
+          <div class="faq-a"><div class="inner" data-i18n="faq.a5">Your coordinates are used to compute distances inside your chosen radius — that's it. You can skip GPS entirely and type a location or drop a pin by hand, and the profile has one-tap GDPR export and account deletion. Passwords are hashed with scrypt, sessions are HMAC-signed JWTs, and every write is validated server-side.</div></div>
         </div>
       </div>
     </div>
@@ -1124,22 +1212,22 @@
   <div class="wrap">
     <div class="cta reveal scale">
       <div>
-        <span class="eyebrow on-dark"><span class="dot"></span> Get the app</span>
-        <h2 class="display h2" id="download-title">Get the app on launch day</h2>
-        <p>NearBuyGoods is a phone app — iPhone and Android. It's in final review with the App Store and Google Play, and these badges go live the day it lands.</p>
+        <span class="eyebrow on-dark"><span class="dot"></span> <span data-i18n="download.eyebrow">Get the app</span></span>
+        <h2 class="display h2" id="download-title" data-i18n="download.title">Get the app on launch day</h2>
+        <p data-i18n="download.lead">NearBuyGoods is a phone app — iPhone and Android. It's in final review with the App Store and Google Play, and these badges go live the day it lands.</p>
         <div class="stores">
           <a class="storebtn light soon" href="#" data-store="play">
             <svg viewBox="0 0 24 24" fill="none"><use href="#i-play"/></svg>
-            <span class="st"><small>Get it on</small><b>Google&nbsp;Play</b></span>
-            <span class="tag">Soon</span>
+            <span class="st"><small data-i18n="hero.googlePlaySmall">Get it on</small><b data-i18n="hero.googlePlayBold">Google&nbsp;Play</b></span>
+            <span class="tag" data-i18n="hero.soon">Soon</span>
           </a>
           <a class="storebtn light soon" href="#">
             <svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-apple"/></svg>
-            <span class="st"><small>Download on the</small><b>App&nbsp;Store</b></span>
-            <span class="tag">Soon</span>
+            <span class="st"><small data-i18n="hero.appStoreSmall">Download on the</small><b data-i18n="hero.appStoreBold">App&nbsp;Store</b></span>
+            <span class="tag" data-i18n="hero.soon">Soon</span>
           </a>
         </div>
-        <p class="fineprint">App Store and Google Play at launch · free tier included · the bundled Lagos demo market ships with the app.</p>
+        <p class="fineprint" data-i18n="download.fineprint">App Store and Google Play at launch · free tier included · the bundled Lagos demo market ships with the app.</p>
       </div>
       <div class="cta-visual" aria-hidden="true">
         <div class="phone">
@@ -1151,11 +1239,11 @@
               <span class="t">NearBuyGoods</span>
             </div>
             <div class="a-body tight">
-              <div class="a-hero-em" style="padding:18px"><i>🛍️</i><b>Upload any item.<br>Find it near you.</b><span>Instantly.</span></div>
-              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-camera"/></svg></span><span><b>Snap it</b><span>1.2 s to ranked matches</span></span></div>
-              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-wallet"/></svg></span><span><b>Compare it</b><span>3 stores · ₦28,500 lowest</span></span></div>
-              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bell"/></svg></span><span><b>Get alerted</b><span>Price drop · back in stock</span></span></div>
-              <div class="a-btnrow"><span class="b p">Install now</span></div>
+              <div class="a-hero-em" style="padding:18px"><i>🛍️</i><b data-i18n-html="mockup.ctaFindNear">Upload any item.<br>Find it near you.</b><span data-i18n="mockup.ctaInstantly">Instantly.</span></div>
+              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-camera"/></svg></span><span><b data-i18n="mockup.ctaSnap">Snap it</b><span data-i18n="mockup.ctaSnapSub">1.2 s to ranked matches</span></span></div>
+              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-wallet"/></svg></span><span><b data-i18n="mockup.ctaCompare">Compare it</b><span data-i18n="mockup.ctaCompareSub">3 stores · {earbuds} lowest</span></span></div>
+              <div class="a-row"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bell"/></svg></span><span><b data-i18n="mockup.ctaAlerted">Get alerted</b><span data-i18n="mockup.ctaAlertedSub">Price drop · back in stock</span></span></div>
+              <div class="a-btnrow"><span class="b p" data-i18n="mockup.ctaInstall">Install now</span></div>
             </div>
           </div>
         </div>
@@ -1177,7 +1265,7 @@
           <span class="bar" aria-hidden="true"></span>
           <span class="word"><b>nearbuy</b><i>goods</i></span>
         </a>
-        <p style="margin-top:16px">Upload any item. Find it at stores near you. Instantly. An API-first, zero-dependency storefront with a Lagos demo market baked in.</p>
+        <p style="margin-top:16px" data-i18n="footer.tagline">Upload any item. Find it at stores near you. Instantly. An API-first, zero-dependency storefront with a Lagos demo market baked in.</p>
         <div class="socials">
           <a href="https://github.com/YungChuckTaylor/nearbuy" target="_blank" rel="noopener" aria-label="GitHub repository"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-github"/></svg></a>
           <a href="/api/docs" target="_blank" rel="noopener" aria-label="API documentation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg></a>
@@ -1185,37 +1273,37 @@
         </div>
       </div>
       <div class="cols">
-        <h4>Product</h4>
-        <a href="#features">Features</a>
-        <a href="#how">How it works</a>
-        <a href="#screens">Screens</a>
-        <a href="#reviews">Reviews</a>
-        <a href="#pricing">Pricing</a>
-        <a href="#download">Download</a>
+        <h4 data-i18n="footer.colProduct">Product</h4>
+        <a href="#features" data-i18n="footer.linkFeatures">Features</a>
+        <a href="#how" data-i18n="footer.linkHow">How it works</a>
+        <a href="#screens" data-i18n="footer.linkScreens">Screens</a>
+        <a href="#reviews" data-i18n="footer.linkReviews">Reviews</a>
+        <a href="#pricing" data-i18n="footer.linkPricing">Pricing</a>
+        <a href="#download" data-i18n="footer.linkDownload">Download</a>
       </div>
       <div class="cols">
-        <h4>Developers</h4>
-        <a href="/api/docs" target="_blank" rel="noopener">API docs</a>
-        <a href="/api/openapi.json" target="_blank" rel="noopener">OpenAPI spec</a>
-        <a href="https://github.com/YungChuckTaylor/nearbuy/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener">Architecture</a>
-        <a href="https://github.com/YungChuckTaylor/nearbuy/blob/main/docs/ANDROID.md" target="_blank" rel="noopener">Android build guide</a>
-        <a href="https://github.com/YungChuckTaylor/nearbuy/blob/main/docs/VERCEL.md" target="_blank" rel="noopener">Deployment notes</a>
+        <h4 data-i18n="footer.colDevelopers">Developers</h4>
+        <a href="/api/docs" target="_blank" rel="noopener" data-i18n="footer.linkApiDocs">API docs</a>
+        <a href="/api/openapi.json" target="_blank" rel="noopener" data-i18n="footer.linkOpenApi">OpenAPI spec</a>
+        <a href="https://github.com/YungChuckTaylor/nearbuy/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener" data-i18n="footer.linkArch">Architecture</a>
+        <a href="https://github.com/YungChuckTaylor/nearbuy/blob/main/docs/ANDROID.md" target="_blank" rel="noopener" data-i18n="footer.linkAndroid">Android build guide</a>
+        <a href="https://github.com/YungChuckTaylor/nearbuy/blob/main/docs/VERCEL.md" target="_blank" rel="noopener" data-i18n="footer.linkVercel">Deployment notes</a>
       </div>
       <div class="cols">
-        <h4>Support</h4>
-        <a href="#faq">FAQ</a>
-        <a href="#pricing">Pricing &amp; plans</a>
-        <a href="#download">App availability</a>
-        <a href="https://github.com/YungChuckTaylor/nearbuy/issues" target="_blank" rel="noopener">Report an issue</a>
+        <h4 data-i18n="footer.colSupport">Support</h4>
+        <a href="#faq" data-i18n="footer.linkFaq">FAQ</a>
+        <a href="#pricing" data-i18n="footer.linkPlans">Pricing &amp; plans</a>
+        <a href="#download" data-i18n="footer.linkAvail">App availability</a>
+        <a href="https://github.com/YungChuckTaylor/nearbuy/issues" target="_blank" rel="noopener" data-i18n="footer.linkReport">Report an issue</a>
       </div>
     </div>
     <div class="foot-bottom">
-      <span>© <span id="year">2026</span> NearBuyGoods · Built with zero dependencies, in Lagos.</span>
+      <span data-i18n="footer.copyright">© 2026 NearBuyGoods · Built with zero dependencies, in Lagos.</span>
       <div class="row">
-        <span class="tiny">Demo data is fictional · NGN pricing</span>
+        <span class="tiny" data-i18n="footer.demoNote">Demo data is fictional · USD ($) pricing</span>
         <button class="motion-toggle" id="motion-toggle" type="button" aria-pressed="false">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><use href="#i-motion"/></svg>
-          Reduce motion
+          <span data-i18n="footer.reduceMotion">Reduce motion</span>
           <span class="sw" aria-hidden="true"></span>
         </button>
       </div>
@@ -1227,6 +1315,7 @@
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-up"/></svg>
 </button>
 
+<script src="/website/assets/js/i18n.js"></script>
 <script src="/website/assets/js/landing.js" defer></script>
 </body>
 </html>
