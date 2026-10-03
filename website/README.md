@@ -59,12 +59,18 @@ PWA icons only.
 
 ## Editing notes
 
-- **Links into the app** use hash routes (`/#/upload`, `/#/product/p1`, …) and
-  open in a new tab, so the landing page never steals the app session.
-- **Android download** points at `/website/download/nearbuygoods.apk`, a real
-  file in this folder. `npm run site:apk` copies the newest `android/*.apk` over
-  it after a native build; replace that file and the
-  link keeps working.
+- **The app is pre-launch, so the page only sells the phone app.** NearBuyGoods
+  goes out through the App Store and Google Play and neither listing is live yet.
+  Keep the store badges at `href="#"` (with their `Soon` tags) until launch day,
+  and keep every other CTA pointed at the on-page `#download` section. Do **not**
+  add `/#/…` deep links into the app, "open the web app" buttons, PWA copy or
+  APK download links back in — that is the whole point of the current state.
+- **Android build** — `website/download/nearbuygoods.apk` is still refreshed by
+  `npm run site:apk` for QA, but the page no longer links it: the app ships
+  through the stores, not as a sideload.
+- **The header collapses to brand + burger at ≤1080 px** (nav and the desktop CTA
+  move into the drawer). `landing.js` and the `max-width: 1080px` block in
+  `landing.css` are keyed to the same breakpoint — change both together.
 - **Social/SEO URLs** are absolute in `index.html` (`canonical`, `og:url`,
   `og:image`, JSON-LD). If the site moves to another domain, update those five
   URLs.

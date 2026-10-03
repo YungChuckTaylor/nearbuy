@@ -818,7 +818,12 @@ html.reduce-motion .chart-line { stroke-dashoffset: 0; }
 
 /* -------------------------------------------------------------- responsive */
 @media (max-width: 1080px) {
+  /* Narrow screens keep the header to brand + burger only: the section nav and
+     the desktop CTA buttons move into the drawer (the drawer carries the
+     "Download the app" action), so the bar never wraps or crowds the brand. */
   .top .nav { display: none; }
+  .top .cta { margin-left: auto; }
+  .top .cta .btn { display: none; }
   .burger { display: grid; }
   .hero-grid { grid-template-columns: 1fr; }
   .hero-visual { min-height: 470px; order: 2; }

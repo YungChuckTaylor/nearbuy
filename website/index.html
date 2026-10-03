@@ -4,11 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>NearBuyGoods — Upload any item. Find it at stores near you. Instantly.</title>
-<meta name="description" content="NearBuyGoods identifies what's in your photo, then shows which nearby store has it in stock, what it costs and how far it is. Compare prices across stores, reserve for pickup and get alerted when the price drops. Free web app, installable PWA and Android APK.">
+<meta name="description" content="NearBuyGoods identifies what's in your photo, then shows which nearby store has it in stock, what it costs and how far it is. Compare prices across stores, reserve for pickup and get alerted when the price drops. A phone app for iPhone and Android — coming soon to the App Store and Google Play.">
 <meta name="theme-color" content="#232c5c">
 <meta name="color-scheme" content="light">
 <meta name="author" content="NearBuyGoods">
-<meta name="apple-mobile-web-app-title" content="NearBuyGoods">
 <link rel="canonical" href="https://nearbuy-liart.vercel.app/website/">
 <link rel="icon" href="/website/assets/img/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/website/assets/img/favicon-32.png" sizes="32x32" type="image/png">
@@ -46,9 +45,8 @@
       "@type": "SoftwareApplication",
       "name": "NearBuyGoods",
       "applicationCategory": "ShoppingApplication",
-      "operatingSystem": "Android, iOS, Web",
+      "operatingSystem": "Android, iOS",
       "url": "https://nearbuy-liart.vercel.app/website/",
-      "downloadUrl": "https://nearbuy-liart.vercel.app/website/download/nearbuygoods.apk",
       "softwareVersion": "1.1",
       "description": "Upload any item — photo, barcode, voice or link — and find it at stores near you with live prices, stock and pickup.",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "NGN", "description": "Free tier: search, discover and save. Premium plans from ₦1,500/month." },
@@ -155,7 +153,6 @@
       <a href="#faq">FAQ</a>
     </nav>
     <div class="cta">
-      <a class="btn ghost sm" href="/" target="_blank" rel="noopener">Open the app</a>
       <a class="btn primary sm" href="#download">Download</a>
       <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="drawer">
         <svg class="i1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-menu"/></svg>
@@ -174,7 +171,6 @@
     <a href="#pricing">Pricing <svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-arrow-r"/></svg></a>
     <a href="#faq">FAQ <svg class="ic sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-arrow-r"/></svg></a>
     <a class="btn primary" href="#download"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><use href="#i-download"/></svg> Download the app</a>
-    <a class="btn ghost" href="/" target="_blank" rel="noopener">Open the web app</a>
   </div>
 </div>
 
@@ -196,25 +192,15 @@
 
         <div class="hero-actions reveal" style="--d:240ms">
           <div class="stores">
-            <a class="storebtn light soon" href="#download">
+            <a class="storebtn light soon" href="#">
               <svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-apple"/></svg>
               <span class="st"><small>Download on the</small><b>App&nbsp;Store</b></span>
               <span class="tag">Soon</span>
             </a>
-            <a class="storebtn soon" href="#download" data-store="play">
+            <a class="storebtn soon" href="#" data-store="play">
               <svg viewBox="0 0 24 24" fill="none"><use href="#i-play"/></svg>
               <span class="st"><small>Get it on</small><b>Google&nbsp;Play</b></span>
               <span class="tag">Soon</span>
-            </a>
-          </div>
-          <div class="btn-row" style="margin-top:14px">
-            <a class="btn primary lg" href="/website/download/nearbuygoods.apk" download>
-              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-download"/></svg>
-              Download Android app · 329&nbsp;KB
-            </a>
-            <a class="btn ghost lg" href="/" target="_blank" rel="noopener">
-              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg>
-              Try the web app
             </a>
           </div>
         </div>
@@ -222,9 +208,9 @@
         <p class="hero-note reveal" style="--d:300ms">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg>
           <span id="platform-hint"
-            data-desktop="Runs in your browser as an installable PWA — and as a signed Android app today."
-            data-android="You're on Android: install the APK in one tap, no Play account needed."
-            data-ios="On iPhone? The same app runs in Safari today and installs to your home screen as a PWA.">Runs in your browser as an installable PWA — and as a signed Android app today.</span>
+            data-desktop="NearBuyGoods is a phone app — landing soon on the App Store and Google Play."
+            data-android="You're on Android: NearBuyGoods lands on Google Play soon — there's nothing to install here yet."
+            data-ios="You're on iPhone: NearBuyGoods lands on the App Store soon — there's nothing to install here yet.">NearBuyGoods is a phone app — landing soon on the App Store and Google Play.</span>
         </p>
 
         <div class="hero-stats reveal" style="--d:360ms">
@@ -248,7 +234,7 @@
         <span class="hero-ring" aria-hidden="true"></span>
         <span class="hero-ring r2" aria-hidden="true"></span>
 
-        <div class="phone hero-phone" data-depth="10" role="img" aria-label="NearBuyGoods home screen: search bar, categories, a store deal and popular items nearby">
+        <div class="phone hero-phone" data-depth="10" role="img" aria-label="NearBuyGoods app screen: search bar, categories, a store deal and popular items nearby">
           <div class="island" aria-hidden="true"></div>
           <div class="screen">
             <div class="a-status"><span>9:41</span><span class="dots"><i></i><i></i><i></i><i></i></span></div>
@@ -415,7 +401,7 @@
       <div class="about-copy">
         <span class="eyebrow reveal">About the app</span>
         <h2 class="display h2 reveal" id="about-title" style="--d:60ms">Two taps from a photo to the shelf it's sitting on.</h2>
-        <p class="reveal" style="--d:120ms">NearBuyGoods is an <b>API-first</b> storefront for what is actually on the shelves near you. One JSON service powers the web app, the installable PWA and the Android build — so the same search, prices and reservations exist everywhere.</p>
+        <p class="reveal" style="--d:120ms">NearBuyGoods is an <b>API-first</b> storefront for what is actually on the shelves near you. One JSON service powers the iOS and Android apps — so the same search, prices and reservations are on every phone.</p>
 
         <div class="mini-feats">
           <div class="minifeat reveal" style="--d:160ms">
@@ -436,14 +422,14 @@
 
         <ul class="checks">
           <li class="reveal" style="--d:260ms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Guest mode for browsing — no account needed to search and compare.</li>
-          <li class="reveal" style="--d:300ms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Works offline with a cached shell and cached API reads.</li>
+          <li class="reveal" style="--d:300ms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Works offline — cached catalogue reads and a saved watchlist.</li>
           <li class="reveal" style="--d:340ms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Built for 44&nbsp;px thumbs: bottom tab bar, centre camera button, bottom sheets.</li>
         </ul>
 
         <div class="btn-row reveal" style="--d:380ms">
-          <a class="btn navy" href="/" target="_blank" rel="noopener">
+          <a class="btn navy" href="#features">
             <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg>
-            More about the app
+            Explore the features
           </a>
           <a class="btn ghost" href="#how">See how it works</a>
         </div>
@@ -466,56 +452,56 @@
         <span class="itile orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-camera"/></svg></span>
         <h3>Photo recognition</h3>
         <p>Point the camera at anything. Dominant colours, barcode and filename signals are scored against the catalogue — you get ranked candidates with a confidence number and the evidence behind each match.</p>
-        <a class="link" href="/#/upload" target="_blank" rel="noopener">Try it in the app <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <a class="link" href="#download">Try it in the app <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </article>
 
       <article class="fcard reveal" style="--d:70ms">
         <span class="itile teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><use href="#i-barcode"/></svg></span>
         <h3>Barcode, voice, URL or text</h3>
-        <p>Four more ways in: scan a barcode with the native or browser decoder, say the product name, paste a shop link, or just type it. Every path lands on the same ranked results.</p>
-        <a class="link" href="/#/search" target="_blank" rel="noopener">Search the demo market <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <p>Four more ways in: scan a barcode with the phone's camera, say the product name, paste a shop link, or just type it. Every path lands on the same ranked results.</p>
+        <a class="link" href="#download">Search the demo market <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </article>
 
       <article class="fcard reveal" style="--d:140ms">
         <span class="itile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-pin"/></svg></span>
         <h3>Discovery inside your radius</h3>
         <p>Haversine distance over precomputed coordinates, with open-now hours, price range, brand filters and a radius you set yourself — from 1&nbsp;km to whole-city.</p>
-        <a class="link" href="/#/search?sort=price" target="_blank" rel="noopener">Open discovery <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <a class="link" href="#download">Open discovery <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </article>
 
       <article class="fcard reveal" style="--d:210ms">
         <span class="itile purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-wallet"/></svg></span>
         <h3>Cross-store price comparison</h3>
         <p>The same product, side by side across every nearby store: price, stock, condition, distance and the last time the shopkeeper updated it.</p>
-        <a class="link" href="/#/product/p1" target="_blank" rel="noopener">Compare a product <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <a class="link" href="#download">Compare a product <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </article>
 
       <article class="fcard reveal" style="--d:0ms">
         <span class="itile teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chart"/></svg></span>
         <h3>Price history &amp; trends</h3>
         <p>Eight weeks of price history per offer, drawn as sparklines and history charts, so “is this a good price?” becomes a fact instead of a feeling.</p>
-        <a class="link" href="/#/product/p1" target="_blank" rel="noopener">See a price chart <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <a class="link" href="#download">See a price chart <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </article>
 
       <article class="fcard reveal" style="--d:70ms">
         <span class="itile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bookmark"/></svg></span>
         <h3>Reserve for pickup</h3>
         <p>Hold stock at the counter with a quantity stepper and a pickup code. The owner sees the reservation in their queue and you get pinged the moment it's ready.</p>
-        <a class="link" href="/#/product/p11" target="_blank" rel="noopener">Make a reservation <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <a class="link" href="#download">Make a reservation <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </article>
 
       <article class="fcard reveal" style="--d:140ms">
         <span class="itile orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bell"/></svg></span>
         <h3>Alerts that land</h3>
         <p>Price drops, back-in-stock and reservation updates delivered over Web Push (VAPID + aes128gcm) — with the app closed. FCM/APNs is the roadmap for the native shells.</p>
-        <a class="link" href="/#/alerts" target="_blank" rel="noopener">See the alert centre <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <a class="link" href="#download">See the alert centre <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </article>
 
       <article class="fcard reveal" style="--d:210ms">
         <span class="itile purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-store"/></svg></span>
         <h3>Dashboard for shop owners</h3>
         <p>Inventory and price editing, deal posting, a live reservation queue and analytics that tie views to matches and clicks. Change a price and watchers are notified automatically.</p>
-        <a class="link" href="/#/business" target="_blank" rel="noopener">Open the dashboard <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <a class="link" href="#download">Open the dashboard <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </article>
     </div>
   </div>
@@ -541,7 +527,7 @@
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Eight-week price history per shop, not just today's number.</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Saved items keep watching the price while you get on with your day.</li>
         </ul>
-        <a class="btn navy" href="/#/search?sort=price" target="_blank" rel="noopener">Compare prices now <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <a class="btn navy" href="#download">Compare prices now <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </div>
       <div class="benefit-visual reveal right">
         <span class="glowring" aria-hidden="true"></span>
@@ -590,7 +576,7 @@
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Reservation codes the owner sees in their live queue.</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Watchlists and named collections keep everything in one place.</li>
         </ul>
-        <a class="btn navy" href="/#/alerts" target="_blank" rel="noopener">See the alert centre <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <a class="btn navy" href="#download">See the alert centre <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </div>
       <div class="benefit-visual reveal left">
         <span class="glowring" aria-hidden="true"></span>
@@ -636,7 +622,7 @@
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Deals publish to shoppers inside their saved radius.</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Analytics: views, matches, clicks and reservations per listing.</li>
         </ul>
-        <a class="btn navy" href="/#/business" target="_blank" rel="noopener">Peek at the dashboard <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
+        <a class="btn navy" href="#download">Peek at the dashboard <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-r"/></svg></a>
       </div>
       <div class="benefit-visual reveal right">
         <span class="glowring" aria-hidden="true"></span>
@@ -923,7 +909,7 @@
         <div class="why-list">
           <div class="why-item reveal" style="--d:100ms">
             <span class="itile orange"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg></span>
-            <div><div class="h4">API-first, not a web page in a box</div><p>One contract (<b>/api/v1</b>, OpenAPI published) serves the PWA, the Android shell and any future native client — generate Swift or Kotlin clients straight from the spec.</p></div>
+            <div><div class="h4">API-first, one contract for every client</div><p>One contract (<b>/api/v1</b>, OpenAPI published) serves the iOS and Android apps — generate Swift or Kotlin clients straight from the spec.</p></div>
           </div>
           <div class="why-item reveal" style="--d:160ms">
             <span class="itile teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bolt"/></svg></span>
@@ -1026,7 +1012,7 @@
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Save items, collections &amp; search history</li>
           <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-x"/></svg> Priority alerts &amp; price-drop predictions</li>
         </ul>
-        <a class="btn ghost" href="/" target="_blank" rel="noopener">Start free</a>
+        <a class="btn ghost" href="#download">Start free</a>
       </div>
 
       <div class="price featured reveal" style="--d:90ms">
@@ -1044,7 +1030,7 @@
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Price-drop predictions</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Receipts &amp; payment history in-app</li>
         </ul>
-        <a class="btn primary" href="/#/premium" target="_blank" rel="noopener">Go premium</a>
+        <a class="btn primary" href="#download">Go premium</a>
       </div>
 
       <div class="price reveal" style="--d:180ms">
@@ -1061,7 +1047,7 @@
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> Shared reservation history</li>
           <li class="off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-x"/></svg> Store listing tools</li>
         </ul>
-        <a class="btn ghost" href="/#/premium" target="_blank" rel="noopener">Choose family</a>
+        <a class="btn ghost" href="#download">Choose family</a>
       </div>
     </div>
 
@@ -1091,14 +1077,14 @@
         <div class="cta-list">
           <a class="btn ghost" href="/api/docs" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg> Browse the API docs</a>
           <a class="btn ghost" href="https://github.com/YungChuckTaylor/nearbuy" target="_blank" rel="noopener"><svg class="ic" viewBox="0 0 24 24" fill="currentColor"><use href="#i-github"/></svg> See the source</a>
-          <a class="btn ghost" href="#download"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-download"/></svg> Download the Android app</a>
+          <a class="btn ghost" href="#download"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-download"/></svg> Get the app</a>
         </div>
       </div>
 
       <div class="faq">
         <div class="faq-item">
           <button class="faq-q" type="button">What exactly is NearBuyGoods?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
-          <div class="faq-a"><div class="inner">A storefront for what's already on the shelves around you. You upload or describe an item; the service identifies it, finds nearby stores holding it, compares their prices and stock, and lets you reserve it for pickup. The same REST API powers the web app, the installable PWA and the Android app.</div></div>
+          <div class="faq-a"><div class="inner">A storefront for what's already on the shelves around you. You upload or describe an item; the service identifies it, finds nearby stores holding it, compares their prices and stock, and lets you reserve it for pickup. The same REST API powers the iOS and Android apps.</div></div>
         </div>
         <div class="faq-item">
           <button class="faq-q" type="button">How does the photo search actually work?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
@@ -1110,7 +1096,7 @@
         </div>
         <div class="faq-item">
           <button class="faq-q" type="button">Which devices can run it?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
-          <div class="faq-a"><div class="inner">Any modern browser (it's an installable PWA with an offline shell), and Android today via the signed APK in this repo — the WebView shell adds native camera, GPS, file picker and download bridges. iOS runs the same PWA core, with a Capacitor build path documented for a future App Store submission.</div></div>
+          <div class="faq-a"><div class="inner">An iPhone or an Android phone, once the app lands — it's in final review for the App Store and Google Play. The apps wrap the same interface with native camera, GPS, file-picker and download bridges, and talk to the same API.</div></div>
         </div>
         <div class="faq-item">
           <button class="faq-q" type="button">Is the data real?<span class="pm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chev-d"/></svg></span></button>
@@ -1139,25 +1125,21 @@
     <div class="cta reveal scale">
       <div>
         <span class="eyebrow on-dark"><span class="dot"></span> Get the app</span>
-        <h2 class="display h2" id="download-title">Download the app today</h2>
-        <p>Install the Android build in one tap, or open the web app and add it to your home screen — same account, same watchlist, same reservations.</p>
+        <h2 class="display h2" id="download-title">Get the app on launch day</h2>
+        <p>NearBuyGoods is a phone app — iPhone and Android. It's in final review with the App Store and Google Play, and these badges go live the day it lands.</p>
         <div class="stores">
-          <a class="storebtn light" href="/website/download/nearbuygoods.apk" download>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-download"/></svg>
-            <span class="st"><small>Android · debug build</small><b>Download APK (329 KB)</b></span>
-          </a>
-          <a class="storebtn light soon" href="#download" data-store="play">
+          <a class="storebtn light soon" href="#" data-store="play">
             <svg viewBox="0 0 24 24" fill="none"><use href="#i-play"/></svg>
             <span class="st"><small>Get it on</small><b>Google&nbsp;Play</b></span>
             <span class="tag">Soon</span>
           </a>
-          <a class="storebtn light soon" href="#download">
+          <a class="storebtn light soon" href="#">
             <svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-apple"/></svg>
             <span class="st"><small>Download on the</small><b>App&nbsp;Store</b></span>
             <span class="tag">Soon</span>
           </a>
         </div>
-        <p class="fineprint">Android 7.0+ (minSdk 24, target 34) · sideload-friendly debug signature, Play release checklist in the repo. iOS ships the same PWA core through the documented Capacitor path.</p>
+        <p class="fineprint">App Store and Google Play at launch · free tier included · the bundled Lagos demo market ships with the app.</p>
       </div>
       <div class="cta-visual" aria-hidden="true">
         <div class="phone">
@@ -1199,8 +1181,7 @@
         <div class="socials">
           <a href="https://github.com/YungChuckTaylor/nearbuy" target="_blank" rel="noopener" aria-label="GitHub repository"><svg viewBox="0 0 24 24" fill="currentColor"><use href="#i-github"/></svg></a>
           <a href="/api/docs" target="_blank" rel="noopener" aria-label="API documentation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-code"/></svg></a>
-          <a href="/" target="_blank" rel="noopener" aria-label="Open the web app"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-globe"/></svg></a>
-          <a href="/website/download/nearbuygoods.apk" download aria-label="Download the Android app"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-download"/></svg></a>
+          <a href="https://github.com/YungChuckTaylor/nearbuy/issues" target="_blank" rel="noopener" aria-label="Report an issue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-info"/></svg></a>
         </div>
       </div>
       <div class="cols">
@@ -1223,10 +1204,9 @@
       <div class="cols">
         <h4>Support</h4>
         <a href="#faq">FAQ</a>
+        <a href="#pricing">Pricing &amp; plans</a>
+        <a href="#download">App availability</a>
         <a href="https://github.com/YungChuckTaylor/nearbuy/issues" target="_blank" rel="noopener">Report an issue</a>
-        <a href="/#/profile" target="_blank" rel="noopener">Accessibility settings</a>
-        <a href="/#/alerts" target="_blank" rel="noopener">Notification setup</a>
-        <a href="/#/premium" target="_blank" rel="noopener">Premium &amp; receipts</a>
       </div>
     </div>
     <div class="foot-bottom">

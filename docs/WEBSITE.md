@@ -84,6 +84,9 @@ sliders, accordion, drawer, reduce-motion toggle, sticky header and JSON-LD.
 
 ## Updating the page
 
+- Launch state: the app isn't in the stores yet, so the page sells the phone app
+  only — store badges stay at `href="#"` and no web-app, PWA or APK links belong
+  on it (see the editing notes in [`website/README.md`](../website/README.md)).
 - HTML/CSS/JS: edit `website/`, push, Vercel redeploys. Assets are cached for a
   day (`Cache-Control: public, max-age=86400`); HTML is always `no-cache`.
 - Social card / favicons: `node website/tools/make-site-assets.mjs`.
