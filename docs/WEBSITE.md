@@ -21,7 +21,7 @@ static-file block was extended so that:
 | `/…` (anything except `/website…`) | `public/` — unchanged PWA behaviour |
 | `/website` and `/website/` | `website/index.html` |
 | `/website/assets/…` | `website/assets/…` |
-| `/website/download/nearbuygoods.apk` | newest `android/*.apk` (published so the download button always works) |
+| `/website/download/nearbuygoods.apk` | the APK shipped inside `website/download/` (`npm run site:apk` copies the newest `android/*.apk` there) |
 | unknown `/website/…` | a real 404 page (not the app shell) |
 
 Because the mapping is inside `server.js`, `node server.js` behaves identically to

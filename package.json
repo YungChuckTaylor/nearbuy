@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "icons": "node tools/make-icons.js"
+    "icons": "node tools/make-icons.js",
+    "site:apk": "node tools/sync-apk.mjs"
   },
   "engines": {
     "node": ">=18"

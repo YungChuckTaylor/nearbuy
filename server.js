@@ -23,7 +23,6 @@ const PUBLIC_DIR = path.join(__dirname, 'public');
 /* Marketing site (website/) is served from the same origin at /website, so the
  * landing page works identically under `node server.js` and on Vercel. */
 const SITE_DIR = path.join(__dirname, 'website');
-const ANDROID_DIR = path.join(__dirname, 'android');
 const DATA_FILE = path.join(__dirname, 'data', 'db.json');
 const PORT = Number(process.env.PORT || 3000);
 const SECRET = process.env.NBG_SECRET || 'nbg-dev-secret-change-in-prod';
@@ -1128,16 +1127,6 @@ const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; cha
 
 /* Newest signed Android build in android/ — published to the site so the
  * landing page's download button always points at a real file. */
-let apkCache = null;
-function latestApk() {
-  if (apkCache && fs.existsSync(apkCache)) return apkCache;
-  try {
-    const files = fs.readdirSync(ANDROID_DIR).filter((f) => f.endsWith('.apk')).sort();
-    apkCache = files.length ? path.join(ANDROID_DIR, files[files.length - 1]) : null;
-  } catch { apkCache = null; }
-  return apkCache;
-}
-
 /* CSP for the landing pages: same strict policy as the PWA, plus a SHA-256 hash
  * for each inline <script> (the JSON-LD block) so no 'unsafe-inline' is needed. */
 function siteCsp(html) {
@@ -1237,9 +1226,10 @@ export async function handler(req, res) {
   const isSite = file === '/website' || file.startsWith('/website/');
   let rel = isSite ? file.slice('/website'.length) : file;
   if (isSite && (rel === '' || rel === '/')) rel = '/index.html';
-  const apk = isSite && rel === '/download/nearbuygoods.apk' ? latestApk() : null;
-  const full = apk || path.join(isSite ? SITE_DIR : PUBLIC_DIR, rel);
-  const allowed = full.startsWith(PUBLIC_DIR) || full.startsWith(SITE_DIR) || full.startsWith(ANDROID_DIR);
+  // the site ships its own copy of the APK (website/download/nearbuygoods.apk),
+  // refreshed with `npm run site:apk` — nothing outside website/ is needed
+  const full = path.join(isSite ? SITE_DIR : PUBLIC_DIR, rel);
+  const allowed = full.startsWith(PUBLIC_DIR) || full.startsWith(SITE_DIR);
   if (!allowed) { res.writeHead(403); res.end(); return; }
   fs.readFile(full, (err, data) => {
     if (err) {

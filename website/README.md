@@ -61,8 +61,9 @@ PWA icons only.
 
 - **Links into the app** use hash routes (`/#/upload`, `/#/product/p1`, …) and
   open in a new tab, so the landing page never steals the app session.
-- **Android download** points at `/website/download/nearbuygoods.apk`, which
-  `server.js` maps to the newest `android/*.apk` build — replace the APK and the
+- **Android download** points at `/website/download/nearbuygoods.apk`, a real
+  file in this folder. `npm run site:apk` copies the newest `android/*.apk` over
+  it after a native build; replace that file and the
   link keeps working.
 - **Social/SEO URLs** are absolute in `index.html` (`canonical`, `og:url`,
   `og:image`, JSON-LD). If the site moves to another domain, update those five
