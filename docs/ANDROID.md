@@ -116,9 +116,11 @@ Copy `docs/ci/android-build-workflow.yml` to `.github/workflows/build-android.ym
 (and commit it). From then on, every push to `main` that touches `public/**`
 (the bundled PWA) or the Android shell: installs the toolchain on the runner,
 runs `build-apk.sh`, verifies the bundle inside the APK matches `public/`
-byte-for-byte, uploads the APK as a workflow artifact, and commits the signed
-APK back into `android/` (replacing the previous one) so the newest APK is
-always downloadable from the repo.
+byte-for-byte, uploads the APK as a workflow artifact, commits the signed
+APK back into `android/` (replacing the previous one) and refreshes
+`website/download/nearbuygoods.apk` — the landing page's download button
+(`npm run site:apk` does the same locally) — so the newest APK is always
+downloadable.
 
 **Remember:** the APK bundles a *snapshot* of the frontend — deploying the site
 (Vercel or `node server.js`) does **not** update an already-installed app.
