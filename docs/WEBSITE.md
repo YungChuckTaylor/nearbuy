@@ -32,6 +32,19 @@ node server.js
 # → http://localhost:3000/website
 ```
 
+### Function bundle
+
+The serverless function reads `website/` from disk at runtime (the tracer cannot
+see dynamic `fs.readFile` paths), so `vercel.json` lists it in `includeFiles`
+alongside `docs/**` and `seed/**`:
+
+```json
+"includeFiles": "{docs/**,seed/**,website/**}"
+```
+
+Without that line the function route would 404 even though the folder exists in
+the repo.
+
 ### If Vercel serves the folder itself
 
 On some project settings Vercel's filesystem pass answers before the rewrite does.
