@@ -243,7 +243,10 @@ section[id] { scroll-margin-top: calc(var(--top-h) + 14px); }
 .top .nav a:hover { background: rgba(35, 44, 92, .05); }
 .top .nav a:hover::after, .top .nav a.active::after { transform: scaleX(1); }
 .top .nav a.active { color: var(--orange-dark); }
-.top .cta { display: flex; align-items: center; gap: 10px; }
+/* Header action cluster. Deliberately NOT `.cta`: that class is the dark download
+   card (navy gradient + large padding + radius), and matching it gave the bar an
+   ~106px tall dark panel behind the burger instead of a 66px top bar. */
+.hdr-cta { display: flex; align-items: center; gap: 10px; }
 .burger { display: none; width: 46px; height: 46px; border-radius: 14px; border: 1.5px solid var(--line); background: #fff; place-items: center; }
 .burger svg { width: 22px; height: 22px; }
 .burger .i2 { display: none; }
@@ -403,7 +406,7 @@ body.menu-open .burger .i2 { display: block; }
 .a-sec { display: flex; align-items: baseline; justify-content: space-between; margin-top: 2px; }
 .a-sec b { font-size: .74rem; font-weight: 800; color: var(--navy); }
 .a-sec span { font-size: .6rem; font-weight: 700; color: var(--orange-dark); }
-.a-cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.a-cats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .a-cat { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 7px 3px; text-align: center; }
 .a-cat i { display: block; font-style: normal; font-size: .95rem; }
 .a-cat span { display: block; font-size: .5rem; font-weight: 700; color: var(--muted); margin-top: 2px; }
@@ -425,7 +428,7 @@ body.menu-open .burger .i2 { display: block; }
 .a-offer .pr span.ok { color: var(--ok); }
 .a-offer .pr span.warn { color: var(--orange-dark); }
 .a-nav {
-  display: grid; grid-template-columns: repeat(5, 1fr); align-items: center; background: #fff;
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: center; background: #fff;
   border-top: 1px solid var(--line); padding: 7px 6px 9px;
 }
 .a-nav .it { display: grid; justify-items: center; gap: 3px; font-size: .46rem; font-weight: 800; color: var(--muted); }
@@ -500,7 +503,7 @@ body.menu-open .burger .i2 { display: block; }
 .a-notif span { display: block; font-size: .56rem; color: var(--muted); line-height: 1.4; }
 
 /* business dashboard screen */
-.a-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.a-kpis { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6px; }
 .a-kpi { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 8px 9px; }
 .a-kpi b { display: block; font-family: var(--font-display); font-size: .95rem; color: var(--navy); line-height: 1; }
 .a-kpi span { display: block; font-size: .5rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
@@ -528,7 +531,10 @@ body.menu-open .burger .i2 { display: block; }
 .marquee.grey { background: var(--bg); border-color: transparent; }
 
 /* -------------------------------------------------------------- sections */
-.sec { position: relative; padding: clamp(58px, 8vw, 112px) 0; }
+/* overflow-x: clip (not hidden) keeps decorative glows from adding page-level
+   horizontal overflow while still letting card shadows render. `hidden` would
+   also turn the section into a scroll container and break sticky children. */
+.sec { position: relative; overflow-x: clip; padding: clamp(58px, 8vw, 112px) 0; }
 .sec.tight { padding: clamp(44px, 6vw, 78px) 0; }
 .sec.white { background: #fff; }
 .sec.tint { background: linear-gradient(180deg, var(--bg), #eef1fa); }
@@ -649,7 +655,9 @@ body.menu-open .burger .i2 { display: block; }
 .scorecard p { font-size: .84rem; color: var(--muted); margin: 14px 0 0; }
 .tst-viewport { overflow: hidden; }
 .tst-track { display: flex; transition: transform .55s cubic-bezier(.2, .8, .2, 1); }
-.tst { min-width: 100%; padding: 4px 6px; }
+/* flex-basis (not min-width) so each slide is exactly one viewport-width of the
+   track; min-width:100% let wide content stretch the slide and blow out the grid. */
+.tst { flex: 0 0 100%; padding: 4px 6px; }
 .tst .quote {
   background: #fff; border: 1px solid var(--line); border-radius: var(--r-xl); padding: 30px 30px 26px;
   box-shadow: var(--shadow); position: relative;
@@ -822,14 +830,14 @@ html.reduce-motion .chart-line { stroke-dashoffset: 0; }
      the desktop CTA buttons move into the drawer (the drawer carries the
      "Download the app" action), so the bar never wraps or crowds the brand. */
   .top .nav { display: none; }
-  .top .cta { margin-left: auto; }
-  .top .cta .btn { display: none; }
+  .top .hdr-cta { margin-left: auto; }
+  .top .hdr-cta .btn { display: none; }
   .burger { display: grid; }
-  .hero-grid { grid-template-columns: 1fr; }
+  .hero-grid { grid-template-columns: minmax(0, 1fr); }
   .hero-visual { min-height: 470px; order: 2; }
   .hero-copy { order: 1; }
-  .hero-stats { grid-template-columns: repeat(3, 1fr); }
-  .about-grid, .benefit, .why-grid, .faq-grid, .tst-layout, .cta { grid-template-columns: 1fr; }
+  .hero-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .about-grid, .benefit, .why-grid, .faq-grid, .tst-layout, .cta { grid-template-columns: minmax(0, 1fr); }
   .benefit.flip .benefit-copy { order: 0; }
   .benefit-visual { order: 2; }
   .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -840,7 +848,7 @@ html.reduce-motion .chart-line { stroke-dashoffset: 0; }
   .hero-ring, .hero-ring.r2 { width: 430px; height: 430px; }
 }
 @media (max-width: 900px) {
-  .price-grid { grid-template-columns: 1fr; max-width: 520px; margin: 0 auto; }
+  .price-grid { grid-template-columns: minmax(0, 1fr); max-width: 520px; margin: 0 auto; }
 }
 @media (max-width: 720px) {
   :root { --top-h: 66px; }
@@ -852,15 +860,15 @@ html.reduce-motion .chart-line { stroke-dashoffset: 0; }
   .float.alertcard { left: -2%; top: 4%; max-width: 200px; padding: 11px 13px; }
   .float.pricecard { right: -2%; bottom: 6%; max-width: 176px; }
   .float.camfab { width: 52px; height: 52px; left: 8%; }
-  .hero-stats { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .hero-stats { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
   .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fcard p { min-height: 0; }
   .screens-head { flex-direction: column; align-items: flex-start; }
   .screens-track { padding-left: 2px; }
-  .foot-grid { grid-template-columns: 1fr; }
+  .foot-grid { grid-template-columns: minmax(0, 1fr); }
   .cta { padding: 30px 22px; }
   .cta-visual { display: none; }
-  .steps { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: minmax(0, 1fr); }
   .storebtn { flex: 1 1 100%; }
   .brand .mark { width: 38px; height: 38px; }
 }
