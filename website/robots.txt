@@ -1,0 +1,3 @@
+# NearBuyGoods landing page
+User-agent: *
+Allow: /website/
