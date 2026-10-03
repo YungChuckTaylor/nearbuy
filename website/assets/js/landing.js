@@ -240,6 +240,13 @@
     if (isAndroid) $$('[data-store="play"]').forEach(function (el) { el.classList.add('pulse'); });
   }
 
+  /* ------------------------------------------------- coming-soon badges */
+  /* The App Store / Google Play badges stay at href="#" until the app is live
+     in both stores; keep them inert instead of jumping the reader to the top. */
+  $$('a[href="#"]').forEach(function (el) {
+    el.addEventListener('click', function (e) { e.preventDefault(); });
+  });
+
   /* ---------------------------------------------------------------- misc */
   var yr = $('#year');
   if (yr) yr.textContent = String(new Date().getFullYear());
