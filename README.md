@@ -44,6 +44,24 @@ accounts exist with random passwords, so the credentials below don't work there.
 
 Guest mode works for search/discovery; login unlocks saves, reservations, alerts.
 
+## Project tracker 🗂️ (`/tracker`)
+
+The feature audit is also a **live planning board**: 389 features parsed from
+`docs/FEATURE_AUDIT.md`, ready to be dragged into workspaces you create.
+
+- **Backlog** — every feature from the document, searchable, filterable, multi-selectable.
+- **Workspaces** — create *MVP features*, *Sprint 1*, anything; fill them by
+  **drag & drop**, bulk selection, or rule-based **auto-plan**.
+- **Board** — five columns per workspace with WIP limits; drag cards between
+  columns and between boards; dropping into **Done** marks the feature shipped.
+- **Live + undo** — changes stream to other viewers (SSE, or polling on
+  serverless), `⌘Z` undoes, `⌘K` searches everything, cards lift with `Space`.
+- **Vercel-native storage** — auto-detects **Neon Postgres** (`DATABASE_URL`,
+  real `nb_trk_*` SQL tables) → **Vercel KV** (`KV_REST_API_URL`) → local
+  `.data/tracker.json`. No npm dependencies either way.
+
+Full guide: [`docs/TRACKER.md`](docs/TRACKER.md) · API list: `/api/docs`.
+
 ## Try the core loop
 
 1. Tap the orange **camera FAB** → take/upload a photo (or barcode / URL / voice / text).
@@ -101,6 +119,14 @@ Details: [`website/README.md`](website/README.md),
 [`docs/WEBSITE.md`](docs/WEBSITE.md) (routing, CSP hashes, deployment checks).
 
 ## Changelog
+
+**v1.2 — project tracker**
+- `/tracker`: interactive, database-driven planning board for the feature audit — backlog,
+  workspaces, drag & drop (pointer-based, works on touch), multi-select bulk edits,
+  auto-plan rules, document import, activity feed, comments, presence, exports.
+- `lib/tracker/`: feature-document parser (Markdown/HTML), storage drivers
+  (Neon Postgres over HTTP · Vercel KV · local file), domain store, REST + SSE routes.
+- Data lives in its own store, so tracker traffic never rewrites the app's KV blob.
 
 **v1.1-web — landing page (`website/`)**
 - `website/`: hand-written HTML/CSS/JS marketing site (no build step, no CDN, no webfonts) with Appzen-style layout and animation: preloader, scroll progress, sticky header + drawer, scroll-reveal, count-up stats, marquee, feature grid, alternating benefits, screen slider, testimonial slider, steps, pricing, FAQ accordion, download CTA, back-to-top and a reduce-motion toggle that honours the app's preference key.
